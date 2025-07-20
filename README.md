@@ -14,23 +14,14 @@ Production-ready Next.js 14 + TypeScript + TailwindCSS + Redux Toolkit app.
 
 ## Folder Structure Backend (Node.js + Express + MongoDB + JavaScript)
 
-server/
-├── constants.js          # App-wide constants (roles, enums, etc.)
-├── controllers/          # Handle HTTP requests and route logic
-│   └── notes.controller.js
-├── services/             # Business logic for each feature
-│   ├── notes.service.js
-│   └── DAS/              # Data Access Services (optional data layer abstraction)
-├── routes/               # Express routes (REST API endpoints)
-│   └── notes.routes.js
-├── middlewares/          # Custom middleware (auth, logging, error handling)
-│   └── auth.middleware.js
-├── models/               # Mongoose schemas/models for MongoDB
-│   └── note.model.js
-├── utils/                # Utility/helper functions (e.g., logger, validators)
-│   └── logger.js
-├── config/               # DB connection and environment config
-│   └── db.js
-├── app.js                # Initializes Express app, middleware, routes
-└── server.js             # Starts the Express server
-
+- `server/constants.js`: App-wide constants (roles, enums, etc.)
+- `server/controllers/` – Handle HTTP requests and route logic
+- `server/services/` – Business logic for each feature
+- `server/services/DAS/` – Data Access Services (optional data layer abstraction)
+- `server/routes/` – Express route definitions (REST API endpoints)
+- `server/middlewares/` – Custom Express middleware (auth, logging, error handling)
+- `server/models/` – Mongoose schemas and models
+- `server/utils/` – Utility/helper functions (e.g., logger, validators)
+- `server/config/` – MongoDB connection and environment configuration
+- `server/app.js` – Initializes Express app, middleware, and routes
+- `server/server.js` – Starts the Express server
