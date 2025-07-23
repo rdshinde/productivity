@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personalize Your Experience - Productivity</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#00809D",
+              "primary-light": "#00B4D8",
+              "primary-dark": "#005577",
+              "primary-vibrant": "#0099CC",
+              accent: "#FF6B35",
+              "accent-light": "#FF8C69",
+              "gray-50": "#FAFAFA",
+              "gray-900": "#0A0A0A",
+            },
+            fontFamily: {
+              apple: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "San Francisco",
+                "Helvetica Neue",
+                "Arial",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      * {
+        scroll-behavior: smooth;
+      }
+
+      .gradient-bg {
+        background: linear-gradient(
+          135deg,
+          #00809d 0%,
+          #00b4d8 50%,
+          #0099cc 100%
+        );
+      }
+
+      .preference-card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 128, 157, 0.1);
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+      }
+
+      .animate-delay-100 {
+        animation-delay: 0.1s;
+      }
+      .animate-delay-200 {
+        animation-delay: 0.2s;
+      }
+      .animate-delay-300 {
+        animation-delay: 0.3s;
+      }
+      .animate-delay-400 {
+        animation-delay: 0.4s;
+      }
+
+      .animate-float {
+        animation: float 6s ease-in-out infinite;
+      }
+
+      .animate-float-delayed {
+        animation: float 6s ease-in-out infinite;
+        animation-delay: -3s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      .floating-element {
+        animation: floatElement 8s ease-in-out infinite;
+      }
+
+      .floating-element:nth-child(2) {
+        animation-delay: -2s;
+      }
+
+      .floating-element:nth-child(3) {
+        animation-delay: -4s;
+      }
+
+      @keyframes floatElement {
+        0%,
+        100% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        25% {
+          transform: translateY(-15px) rotate(2deg);
+        }
+        50% {
+          transform: translateY(-30px) rotate(0deg);
+        }
+        75% {
+          transform: translateY(-15px) rotate(-2deg);
+        }
+      }
+
+      .preference-chip {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .preference-chip:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 128, 157, 0.15);
+      }
+
+      .preference-chip.selected {
+        background: linear-gradient(135deg, #00809d 0%, #0099cc 100%);
+        color: white;
+        border-color: #00809d;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(0, 128, 157, 0.25);
+      }
+
+      .preference-chip.selected:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0, 128, 157, 0.3);
+      }
+
+      .submit-btn {
+        background: linear-gradient(135deg, #00809d 0%, #0099cc 100%);
+        transition: all 0.3s ease;
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(0, 128, 157, 0.25);
+      }
+
+      .submit-btn:disabled {
+        background: #e5e7eb;
+        color: #9ca3af;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .pulse-ring {
+        animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+      }
+
+      @keyframes pulse-ring {
+        0% {
+          transform: scale(0.33);
+        }
+        40%,
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+          transform: scale(1.2);
+        }
+      }
+    </style>
+  </head>
+  <body class="font-apple bg-white text-gray-900 overflow-x-hidden">
+    <!-- Navigation -->
+    <nav
+      id="navbar"
+      class="fixed top-0 w-full z-50 backdrop-blur-xl border-b border-gray-200/20 shadow-sm transition-all duration-300"
+      style="background: rgba(255, 255, 255, 0.85)"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16 sm:h-20">
+          <div class="flex items-center">
+            <div
+              class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-primary-vibrant rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg"
+              style="
+                background: linear-gradient(135deg, #00809d 0%, #0099cc 100%);
+              "
+            >
+              <svg
+                class="w-4 h-4 sm:w-6 sm:h-6 text-white"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                ></path>
+              </svg>
+            </div>
+            <span class="ml-3 sm:ml-4 text-lg sm:text-2xl font-bold text-gray-900 tracking-tight"
+              >Productivity</span
+            >
+          </div>
+
+          <div class="flex items-center space-x-2 sm:space-x-4">
+            <div
+              class="hidden sm:flex items-center space-x-2 text-sm text-gray-600"
+            >
+              <div class="w-2 h-2 bg-primary rounded-full"></div>
+              <span>Step 2 of 2</span>
+            </div>
+            <button
+              onclick="skipPreferences()"
+              class="text-gray-600 hover:text-primary transition-all duration-200 font-medium text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2"
+            >
+              Skip for now
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Preferences Section -->
+    <section
+      class="relative min-h-screen flex items-center justify-center gradient-bg overflow-hidden pt-20 sm:pt-24 md:pt-0"
+    >
+      <div class="absolute inset-0 bg-black/10"></div>
+
+      <!-- Floating Background Elements -->
+      <div class="absolute inset-0 overflow-hidden">
+        <div
+          class="floating-element absolute top-20 left-10 w-16 h-16 bg-white/10 rounded-full blur-sm"
+        ></div>
+        <div
+          class="floating-element absolute top-40 right-20 w-24 h-24 bg-primary-light/20 rounded-full blur-sm"
+        ></div>
+        <div
+          class="floating-element absolute bottom-40 left-20 w-20 h-20 bg-accent/20 rounded-full blur-sm"
+        ></div>
+        <div
+          class="floating-element absolute bottom-20 right-10 w-12 h-12 bg-white/15 rounded-full blur-sm"
+        ></div>
+      </div>
+
+      <div
+        class="relative z-10 w-full mx-auto px-4 sm:px-6 lg:px-8 my-32"
+      >
+        <div class="flex items-center justify-center min-h-screen md:min-h-0">
+          <!-- Preferences Form - Full Width on Desktop -->
+          <div class="w-full flex justify-center">
+            <div
+              class="preference-card mx-8 p-6 sm:p-8 lg:p-12 rounded-3xl shadow-2xl animate-fade-in-up max-w-5xl"
+            >
+          
+            <div class="text-center mb-6 sm:mb-8">
+              <div
+                class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-primary to-primary-vibrant rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-lg relative"
+                style="
+                  background: linear-gradient(135deg, #00809d 0%, #0099cc 100%);
+                "
+              >
+                <svg
+                  class="w-6 h-6 sm:w-8 sm:h-8 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                  ></path>
+                </svg>
+                <div
+                  class="absolute inset-0 rounded-2xl bg-primary opacity-25 pulse-ring"
+                ></div>
+              </div>
+              <h1
+                class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 sm:mb-3"
+                style="font-weight: 800; letter-spacing: -0.02em"
+              >
+                Personalize Your
+                <span class="text-primary">Experience</span>
+              </h1>
+              <p class="text-base sm:text-lg text-gray-600 font-medium px-2">
+                Select your interests to help us tailor your productivity
+                workspace
+              </p>
+            </div>
+
+            <!-- Progress Indicator -->
+            <div class="mb-6 sm:mb-8 animate-fade-in-up animate-delay-100">
+              <div
+                class="flex items-center justify-between text-sm text-gray-600 mb-2"
+              >
+                <span>Choose your interests</span>
+                <span id="selection-count">0 selected</span>
+              </div>
+              <div class="w-full bg-gray-200 rounded-full h-2">
+                <div
+                  id="progress-bar"
+                  class="bg-gradient-to-r from-primary to-primary-vibrant h-2 rounded-full transition-all duration-300"
+                  style="width: 0%"
+                ></div>
+              </div>
+            </div>
+
+            <!-- Preference Chips -->
+            <div class="mb-6 sm:mb-8 animate-fade-in-up animate-delay-200">
+              <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 lg:gap-4">
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="software-engineering"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">💻</div>
+                  <div class="text-xs sm:text-sm font-semibold leading-tight">Software Engineering</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="cooking"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">🍳</div>
+                  <div class="text-xs sm:text-sm font-semibold">Cooking</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="music"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">🎵</div>
+                  <div class="text-xs sm:text-sm font-semibold">Music</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="drama"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">🎭</div>
+                  <div class="text-xs sm:text-sm font-semibold leading-tight">Drama & Theater</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="travel"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">✈️</div>
+                  <div class="text-xs sm:text-sm font-semibold">Travel</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="fitness"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">💪</div>
+                  <div class="text-xs sm:text-sm font-semibold">Fitness</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="photography"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">📸</div>
+                  <div class="text-xs sm:text-sm font-semibold">Photography</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="reading"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">📚</div>
+                  <div class="text-xs sm:text-sm font-semibold">Reading</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="art"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">🎨</div>
+                  <div class="text-xs sm:text-sm font-semibold leading-tight">Art & Design</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="business"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">💼</div>
+                  <div class="text-xs sm:text-sm font-semibold">Business</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="gaming"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">🎮</div>
+                  <div class="text-xs sm:text-sm font-semibold">Gaming</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="science"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">🔬</div>
+                  <div class="text-xs sm:text-sm font-semibold">Science</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="writing"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">✍️</div>
+                  <div class="text-xs sm:text-sm font-semibold">Writing</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="education"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">🎓</div>
+                  <div class="text-xs sm:text-sm font-semibold">Education</div>
+                </div>
+                <div
+                  class="preference-chip bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl px-2 sm:px-4 py-3 sm:py-4 text-center"
+                  data-preference="sports"
+                >
+                  <div class="text-2xl sm:text-3xl mb-2">⚽</div>
+                  <div class="text-xs sm:text-sm font-semibold">Sports</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="animate-fade-in-up animate-delay-300">
+              <button
+                id="submit-btn"
+                onclick="submitPreferences()"
+                disabled
+                class="submit-btn w-full py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl font-semibold text-white shadow-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
+              >
+                <span id="btn-text">Continue to Dashboard</span>
+                <span id="btn-loading" class="hidden"
+                  >Setting up your workspace...</span
+                >
+              </button>
+              <p class="text-xs sm:text-sm text-gray-500 text-center mt-2 sm:mt-3 px-2">
+                You can always change these preferences later in settings
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      let selectedPreferences = new Set();
+      const preferenceChips = document.querySelectorAll(".preference-chip");
+      const submitBtn = document.getElementById("submit-btn");
+      const selectionCount = document.getElementById("selection-count");
+      const progressBar = document.getElementById("progress-bar");
+      const btnText = document.getElementById("btn-text");
+      const btnLoading = document.getElementById("btn-loading");
+
+      // Add click event listeners to preference chips
+      preferenceChips.forEach((chip) => {
+        chip.addEventListener("click", () => {
+          const preference = chip.dataset.preference;
+
+          if (selectedPreferences.has(preference)) {
+            selectedPreferences.delete(preference);
+            chip.classList.remove("selected");
+          } else {
+            selectedPreferences.add(preference);
+            chip.classList.add("selected");
+          }
+
+          updateUI();
+        });
+      });
+
+      function updateUI() {
+        const count = selectedPreferences.size;
+
+        // Update selection count
+        selectionCount.textContent = `${count} selected`;
+
+        // Update progress bar
+        const progressPercent = Math.min((count / 3) * 100, 100); // Max at 3 selections for full bar
+        progressBar.style.width = `${progressPercent}%`;
+
+        // Enable/disable submit button
+        if (count > 0) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove("opacity-50", "cursor-not-allowed");
+        } else {
+          submitBtn.disabled = true;
+          submitBtn.classList.add("opacity-50", "cursor-not-allowed");
+        }
+      }
+
+      function submitPreferences() {
+        if (selectedPreferences.size === 0) return;
+
+        // Show loading state
+        btnText.classList.add("hidden");
+        btnLoading.classList.remove("hidden");
+        submitBtn.disabled = true;
+
+        // Simulate API call
+        setTimeout(() => {
+          // Store preferences in localStorage (in real app, send to backend)
+          localStorage.setItem(
+            "userPreferences",
+            JSON.stringify(Array.from(selectedPreferences))
+          );
+
+          // Redirect to dashboard
+          window.location.href = "dashboard.html";
+        }, 2000);
+      }
+
+      function skipPreferences() {
+        // Store empty preferences and redirect
+        localStorage.setItem("userPreferences", JSON.stringify([]));
+        window.location.href = "dashboard.html";
+      }
+
+      // Add keyboard support
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !submitBtn.disabled) {
+          submitPreferences();
+        }
+      });
+    </script>
+  </body>
+</html>

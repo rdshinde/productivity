@@ -1,0 +1,3397 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Events - Productivity</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        overflow: hidden;
+      }
+
+      .gradient-bg {
+        background: linear-gradient(
+          135deg,
+          #00809d 0%,
+          #00b4d8 50%,
+          #0099cc 100%
+        );
+      }
+
+      .sidebar-item {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #6b7280;
+        font-weight: 500;
+      }
+
+      .sidebar-item:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(0, 128, 157, 0.1),
+          rgba(0, 180, 216, 0.08)
+        );
+        border-radius: 8px;
+        transform: translateX(2px);
+        color: #00809d;
+      }
+
+      .sidebar-item.active {
+        background: linear-gradient(135deg, #00809d, #00b4d8);
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        transform: translateX(2px);
+      }
+
+      .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 1px;
+        background-color: #e5e7eb;
+      }
+
+      .calendar-day {
+        background: white;
+        min-height: 120px;
+        padding: 8px;
+        transition: background-color 0.2s;
+      }
+
+      .calendar-day:hover {
+        background-color: #f9fafb;
+      }
+
+      .calendar-day.other-month {
+        background-color: #f9fafb;
+        color: #9ca3af;
+      }
+
+      .calendar-day.today {
+        background-color: #eff6ff;
+        border: 2px solid #3b82f6;
+      }
+
+      .event-item {
+        background: #3b82f6;
+        color: white;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        margin-bottom: 2px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+      }
+
+      .event-item:hover {
+        opacity: 0.8;
+      }
+
+      .event-item.meeting {
+        background: #10b981;
+      }
+
+      .event-item.personal {
+        background: #f59e0b;
+      }
+
+      .event-item.deadline {
+        background: #ef4444;
+      }
+
+      .view-toggle {
+        padding: 8px 16px;
+        border-radius: 6px;
+        transition: all 0.2s;
+        font-weight: 500;
+      }
+
+      .view-toggle.active {
+        background: #3b82f6;
+        color: white;
+      }
+
+      .view-toggle:not(.active):hover {
+        background: #f3f4f6;
+      }
+
+      .right-drawer {
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+      }
+
+      .right-drawer.open {
+        transform: translateX(0);
+      }
+
+      .floating-add-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        transition: all 0.3s;
+      }
+
+      .floating-add-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 12px 35px rgba(59, 130, 246, 0.4);
+      }
+
+      .mini-calendar {
+        font-size: 0.875rem;
+      }
+
+      .mini-calendar .day {
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .mini-calendar .day:hover {
+        background-color: #f3f4f6;
+      }
+
+      .mini-calendar .day.today {
+        background-color: #3b82f6;
+        color: white;
+        font-weight: 600;
+      }
+
+      .mini-calendar .day.selected {
+        background-color: #dbeafe;
+        color: #1d4ed8;
+        font-weight: 600;
+      }
+
+      .notification-badge {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: #ef4444;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Event hover tooltip */
+      .event-tooltip {
+        position: absolute;
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        border: 1px solid #e5e7eb;
+        z-index: 100;
+        min-width: 280px;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s ease;
+        pointer-events: none;
+      }
+
+      .event-tooltip.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .event-tooltip::before {
+        content: "";
+        position: absolute;
+        top: -8px;
+        left: 20px;
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 8px solid white;
+      }
+
+      /* Event status indicators */
+      .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 6px;
+      }
+
+      .status-confirmed {
+        background: #10b981;
+      }
+
+      .status-tentative {
+        background: #f59e0b;
+      }
+
+      .status-busy {
+        background: #ef4444;
+      }
+
+      .status-free {
+        background: #6b7280;
+      }
+
+      /* Add event placeholder */
+      .add-event-placeholder {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        opacity: 0;
+        transition: opacity 0.2s;
+        color: #9ca3af;
+        font-size: 0.75rem;
+        pointer-events: none;
+      }
+
+      .calendar-day:hover .add-event-placeholder {
+        opacity: 1;
+      }
+
+      .calendar-day:not(:hover) .add-event-placeholder {
+        opacity: 0;
+      }
+
+      /* Enhanced event items */
+      .event-item {
+        background: #3b82f6;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        margin-bottom: 3px;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-left: 3px solid rgba(255, 255, 255, 0.3);
+      }
+
+      .event-item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      }
+
+      .event-time {
+        font-size: 0.65rem;
+        opacity: 0.9;
+        font-weight: 500;
+      }
+
+      /* User avatar chips */
+      .user-chip {
+        display: inline-flex;
+        align-items: center;
+        background: #f3f4f6;
+        border-radius: 20px;
+        padding: 4px 8px 4px 4px;
+        margin: 2px;
+        font-size: 0.75rem;
+        color: #374151;
+      }
+
+      .user-chip img {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        margin-right: 6px;
+      }
+
+      .user-chip .remove-btn {
+        margin-left: 4px;
+        color: #6b7280;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .user-chip .remove-btn:hover {
+        color: #ef4444;
+      }
+
+      /* Card-based layout improvements */
+      .form-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 16px;
+        border: 1px solid #f3f4f6;
+      }
+
+      .form-card h3 {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+      }
+
+      .form-card h3 svg {
+        width: 18px;
+        height: 18px;
+        margin-right: 8px;
+        color: #6b7280;
+      }
+
+      /* Custom select styling */
+      .custom-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 16px;
+        padding-right: 40px;
+      }
+
+      /* Recurrence pattern display */
+      .recurrence-pattern {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+        font-size: 0.875rem;
+        color: #475569;
+      }
+
+      /* Priority indicators */
+      .priority-high {
+        border-left-color: #ef4444 !important;
+      }
+
+      .priority-medium {
+        border-left-color: #f59e0b !important;
+      }
+
+      .priority-low {
+        border-left-color: #10b981 !important;
+      }
+
+      /* RSVP Status Indicators */
+      .rsvp-status {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-right: 4px;
+      }
+
+      .rsvp-accepted {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .rsvp-declined {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .rsvp-maybe {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .rsvp-pending {
+        background: #f3f4f6;
+        color: #374151;
+      }
+
+      /* Shared Event Indicators */
+      .shared-badge {
+        display: inline-flex;
+        align-items: center;
+        background: #ecfdf5;
+        color: #065f46;
+        padding: 2px 6px;
+        border-radius: 8px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        margin-left: 4px;
+      }
+
+      .lock-icon {
+        width: 12px;
+        height: 12px;
+        margin-right: 2px;
+      }
+
+      /* Collaborator Avatars with Editing Status */
+      .collaborator-stack {
+        display: flex;
+        align-items: center;
+        margin-left: 8px;
+      }
+
+      .collaborator-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid white;
+        margin-left: -8px;
+        position: relative;
+        transition: transform 0.2s;
+      }
+
+      .collaborator-avatar:hover {
+        transform: scale(1.1);
+        z-index: 10;
+      }
+
+      .editing-indicator {
+        position: absolute;
+        bottom: -2px;
+        right: -2px;
+        width: 8px;
+        height: 8px;
+        background: #10b981;
+        border-radius: 50%;
+        border: 1px solid white;
+        animation: pulse 1.5s infinite;
+      }
+
+      /* Quick Filter Chips */
+      .filter-chips {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+
+      .filter-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 6px 12px;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        color: #374151;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .filter-chip:hover {
+        background: #f3f4f6;
+        border-color: #d1d5db;
+      }
+
+      .filter-chip.active {
+        background: #3b82f6;
+        color: white;
+        border-color: #3b82f6;
+      }
+
+      .filter-chip .count {
+        margin-left: 4px;
+        font-size: 0.75rem;
+        opacity: 0.7;
+      }
+
+      /* Comment Thread UI */
+      .comment-thread {
+        margin-top: 12px;
+        padding-top: 12px;
+        border-top: 1px solid #f3f4f6;
+      }
+
+      .comment-item {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 8px;
+        background: #f9fafb;
+        border-radius: 8px;
+        font-size: 0.875rem;
+      }
+
+      .comment-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .comment-content {
+        flex: 1;
+      }
+
+      .comment-author {
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 2px;
+      }
+
+      .comment-text {
+        color: #4b5563;
+        line-height: 1.4;
+        margin-bottom: 4px;
+      }
+
+      .comment-timestamp {
+        font-size: 0.75rem;
+        color: #9ca3af;
+      }
+
+      .comment-input {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        margin-top: 8px;
+      }
+
+      .comment-input textarea {
+        flex: 1;
+        resize: none;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        padding: 8px;
+        font-size: 0.875rem;
+      }
+
+      .comment-input button {
+        padding: 8px 12px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        cursor: pointer;
+      }
+
+      /* Enhanced Search */
+      .enhanced-search {
+        position: relative;
+        margin-bottom: 16px;
+      }
+
+      .search-suggestions {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        z-index: 20;
+        display: none;
+      }
+
+      .search-suggestion {
+        padding: 8px 12px;
+        border-bottom: 1px solid #f3f4f6;
+        cursor: pointer;
+        font-size: 0.875rem;
+      }
+
+      .search-suggestion:hover {
+        background: #f9fafb;
+      }
+
+      .search-suggestion:last-child {
+        border-bottom: none;
+      }
+
+      .search-suggestion .suggestion-type {
+        font-size: 0.75rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        font-weight: 500;
+      }
+
+      /* Dark Mode Styles */
+      .dark {
+        background: #0f172a;
+        color: #e2e8f0;
+      }
+
+      .dark .bg-white {
+        background: #1e293b !important;
+      }
+
+      .dark .bg-gray-50 {
+        background: #0f172a !important;
+      }
+
+      .dark .text-gray-900 {
+        color: #e2e8f0 !important;
+      }
+
+      .dark .text-gray-700 {
+        color: #cbd5e1 !important;
+      }
+
+      .dark .text-gray-600 {
+        color: #94a3b8 !important;
+      }
+
+      .dark .text-gray-500 {
+        color: #64748b !important;
+      }
+
+      .dark .border-gray-200 {
+        border-color: #334155 !important;
+      }
+
+      .dark .border-gray-300 {
+        border-color: #475569 !important;
+      }
+
+      .dark .gradient-bg {
+        background: linear-gradient(
+          135deg,
+          #0ea5e9 0%,
+          #3b82f6 50%,
+          #6366f1 100%
+        );
+      }
+
+      .dark .calendar-day {
+        background: #1e293b;
+        border-color: #334155;
+      }
+
+      .dark .calendar-day:hover {
+        background: #334155;
+      }
+
+      .dark .calendar-day.today {
+        background: #1e40af;
+        border-color: #3b82f6;
+      }
+
+      .dark .form-card {
+        background: #1e293b;
+        border-color: #334155;
+      }
+
+      .dark .event-tooltip {
+        background: #1e293b;
+        border-color: #334155;
+      }
+
+      .dark .comment-item {
+        background: #334155;
+      }
+
+      .dark .filter-chip {
+        background: #334155;
+        border-color: #475569;
+        color: #e2e8f0;
+      }
+
+      .dark .filter-chip:hover {
+        background: #475569;
+      }
+
+      /* Theme Toggle */
+      .theme-toggle {
+        position: relative;
+        width: 48px;
+        height: 24px;
+        background: #d1d5db;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .theme-toggle.dark {
+        background: #4f46e5;
+      }
+
+      .theme-toggle-slider {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 20px;
+        height: 20px;
+        background: white;
+        border-radius: 50%;
+        transition: transform 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .theme-toggle.dark .theme-toggle-slider {
+        transform: translateX(24px);
+      }
+
+      .theme-toggle-slider svg {
+        width: 12px;
+        height: 12px;
+      }
+
+      /* Calendar View Styles */
+      .calendar-view {
+        display: none;
+      }
+
+      .calendar-view:first-child,
+      #month-view {
+        display: block;
+      }
+
+      /* Week View Styles */
+      .week-view {
+        display: none;
+      }
+
+      .week-view.active {
+        display: block;
+      }
+
+      .week-header {
+        display: grid;
+        grid-template-columns: 60px repeat(7, 1fr);
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .week-body {
+        display: grid;
+        grid-template-columns: 60px repeat(7, 1fr);
+        height: 100%;
+      }
+
+      .time-slot {
+        border-right: 1px solid #f3f4f6;
+        border-bottom: 1px solid #f3f4f6;
+        padding: 8px 4px;
+        font-size: 0.75rem;
+        color: #6b7280;
+        text-align: center;
+      }
+
+      .day-column {
+        border-right: 1px solid #f3f4f6;
+        position: relative;
+      }
+
+      .hour-row {
+        height: 60px;
+        border-bottom: 1px solid #f9fafb;
+        position: relative;
+      }
+
+      /* Day View Styles */
+      .day-view {
+        display: none;
+      }
+
+      .day-view.active {
+        display: block;
+      }
+
+      /* Agenda View Styles */
+      .agenda-view {
+        display: none;
+      }
+
+      .agenda-view.active {
+        display: block;
+      }
+
+      .agenda-item {
+        padding: 12px;
+        border-bottom: 1px solid #f3f4f6;
+        transition: background-color 0.2s;
+      }
+
+      .agenda-item:hover {
+        background-color: #f9fafb;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1024px) {
+        .right-drawer {
+          position: fixed;
+          top: 0;
+          right: 0;
+          height: 100vh;
+          z-index: 50;
+          width: 320px;
+        }
+
+        .main-content {
+          margin-right: 0;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .left-sidebar {
+          position: fixed;
+          left: 0;
+          top: 0;
+          height: 100vh;
+          z-index: 40;
+          transform: translateX(-100%);
+          transition: transform 0.3s;
+        }
+
+        .left-sidebar.open {
+          transform: translateX(0);
+        }
+
+        .main-content {
+          margin-left: 0;
+        }
+
+        .calendar-day {
+          min-height: 80px;
+          padding: 4px;
+        }
+
+        .floating-add-btn {
+          bottom: 16px;
+          right: 16px;
+          width: 48px;
+          height: 48px;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-900">
+    <div class="flex h-screen">
+      <!-- Left Sidebar -->
+      <aside
+        class="left-sidebar w-64 bg-white border-r border-gray-200 flex flex-col"
+      >
+        <!-- Logo Section -->
+        <div class="px-6 py-5 border-b border-gray-100">
+          <div class="flex items-center space-x-3">
+            <div
+              class="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+            <span class="text-xl font-bold text-gray-900">Events</span>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-6 space-y-1">
+          <a
+            href="#"
+            class="sidebar-item active flex items-center px-3 py-2 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              />
+            </svg>
+            My Events
+            <span
+              class="ml-auto bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full"
+              >24</span
+            >
+          </a>
+
+          <a
+            href="#"
+            class="sidebar-item flex items-center px-3 py-2 rounded-lg"
+          >
+            <svg
+              class="w-5 h-5 mr-3"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+            Shared Events
+            <span
+              class="ml-auto bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full"
+              >3</span
+            >
+          </a>
+
+          <div class="pt-4">
+            <h3
+              class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-3"
+            >
+              Event Types
+            </h3>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-3 py-2 rounded-lg"
+            >
+              <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+              Work Meetings
+              <span class="ml-auto text-xs text-gray-500">12</span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-3 py-2 rounded-lg"
+            >
+              <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+              Personal
+              <span class="ml-auto text-xs text-gray-500">8</span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-3 py-2 rounded-lg"
+            >
+              <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+              Reminders
+              <span class="ml-auto text-xs text-gray-500">4</span>
+            </a>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-3 py-2 rounded-lg"
+            >
+              <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+              Deadlines
+              <span class="ml-auto text-xs text-gray-500">2</span>
+            </a>
+          </div>
+
+          <!-- Mini Calendar -->
+          <div class="pt-6">
+            <h3
+              class="text-xs font-semibold text-gray-500 uppercase tracking-wider px-3 mb-3"
+            >
+              Quick Calendar
+            </h3>
+            <div class="px-3">
+              <div class="mini-calendar">
+                <div class="flex items-center justify-between mb-3">
+                  <span class="font-semibold text-sm">July 2025</span>
+                  <div class="flex space-x-1">
+                    <button class="p-1 hover:bg-gray-100 rounded">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 19l-7-7 7-7"
+                        />
+                      </svg>
+                    </button>
+                    <button class="p-1 hover:bg-gray-100 rounded">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+                <div class="grid grid-cols-7 gap-1 mb-2">
+                  <div class="text-xs text-gray-500 text-center font-medium">
+                    S
+                  </div>
+                  <div class="text-xs text-gray-500 text-center font-medium">
+                    M
+                  </div>
+                  <div class="text-xs text-gray-500 text-center font-medium">
+                    T
+                  </div>
+                  <div class="text-xs text-gray-500 text-center font-medium">
+                    W
+                  </div>
+                  <div class="text-xs text-gray-500 text-center font-medium">
+                    T
+                  </div>
+                  <div class="text-xs text-gray-500 text-center font-medium">
+                    F
+                  </div>
+                  <div class="text-xs text-gray-500 text-center font-medium">
+                    S
+                  </div>
+                </div>
+                <div class="grid grid-cols-7 gap-1">
+                  <div class="day text-gray-400">29</div>
+                  <div class="day text-gray-400">30</div>
+                  <div class="day">1</div>
+                  <div class="day">2</div>
+                  <div class="day">3</div>
+                  <div class="day">4</div>
+                  <div class="day">5</div>
+                  <div class="day">6</div>
+                  <div class="day">7</div>
+                  <div class="day">8</div>
+                  <div class="day">9</div>
+                  <div class="day">10</div>
+                  <div class="day">11</div>
+                  <div class="day">12</div>
+                  <div class="day">13</div>
+                  <div class="day">14</div>
+                  <div class="day">15</div>
+                  <div class="day">16</div>
+                  <div class="day">17</div>
+                  <div class="day">18</div>
+                  <div class="day">19</div>
+                  <div class="day">20</div>
+                  <div class="day">21</div>
+                  <div class="day today">22</div>
+                  <div class="day">23</div>
+                  <div class="day">24</div>
+                  <div class="day">25</div>
+                  <div class="day">26</div>
+                  <div class="day">27</div>
+                  <div class="day">28</div>
+                  <div class="day">29</div>
+                  <div class="day">30</div>
+                  <div class="day">31</div>
+                  <div class="day text-gray-400">1</div>
+                  <div class="day text-gray-400">2</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Create Event Button -->
+        <div class="p-4 border-t border-gray-200">
+          <button
+            class="w-full gradient-bg text-white px-4 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-300 flex items-center justify-center space-x-2"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+            <span>New Event</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 flex flex-col">
+        <!-- Top Header -->
+        <header class="bg-white border-b border-gray-200 px-6 py-4">
+          <div class="flex items-center justify-between">
+            <!-- Left: View Controls -->
+            <div class="flex items-center space-x-6">
+              <div class="flex items-center space-x-4">
+                <button class="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                </button>
+                <h1 class="text-2xl font-bold text-gray-900">July 2025</h1>
+                <div class="flex space-x-1">
+                  <button class="p-2 hover:bg-gray-100 rounded-lg">
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </button>
+                  <button class="p-2 hover:bg-gray-100 rounded-lg">
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- View Toggle -->
+              <div class="flex bg-gray-100 rounded-lg p-1">
+                <button class="view-toggle active" data-view="month">
+                  Month
+                </button>
+                <button class="view-toggle" data-view="week">Week</button>
+                <button class="view-toggle" data-view="day">Day</button>
+                <button class="view-toggle" data-view="agenda">Agenda</button>
+              </div>
+            </div>
+
+            <!-- Right: Search and Profile -->
+            <div class="flex items-center space-x-4">
+              <!-- Enhanced Search Bar -->
+              <div class="enhanced-search">
+                <div class="relative">
+                  <input
+                    type="text"
+                    placeholder="Search events, people, locations..."
+                    class="pl-10 pr-4 py-2 w-80 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                  <svg
+                    class="absolute left-3 top-2.5 w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                </div>
+                <div class="search-suggestions">
+                  <div class="search-suggestion">
+                    <div class="suggestion-type">Event</div>
+                    <div>Board Meeting - Today 10:00 AM</div>
+                  </div>
+                  <div class="search-suggestion">
+                    <div class="suggestion-type">Person</div>
+                    <div>Sarah Johnson - 3 shared events</div>
+                  </div>
+                  <div class="search-suggestion">
+                    <div class="suggestion-type">Location</div>
+                    <div>Conference Room A - 5 upcoming events</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dark Mode Toggle -->
+              <div class="flex items-center space-x-2">
+                <svg
+                  class="w-4 h-4 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                  />
+                </svg>
+                <div class="theme-toggle" id="theme-toggle">
+                  <div class="theme-toggle-slider">
+                    <svg
+                      class="sun-icon"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
+                      />
+                    </svg>
+                    <svg
+                      class="moon-icon hidden"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+                <svg
+                  class="w-4 h-4 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                  />
+                </svg>
+              </div>
+
+              <!-- Notifications -->
+              <button class="relative p-2 hover:bg-gray-100 rounded-lg">
+                <svg
+                  class="w-6 h-6 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 17h5l-5-5 5-5m-10 10l5-5-5-5"
+                  />
+                </svg>
+                <div class="notification-badge">3</div>
+              </button>
+
+              <!-- Settings -->
+              <button class="p-2 hover:bg-gray-100 rounded-lg">
+                <svg
+                  class="w-6 h-6 text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </button>
+
+              <!-- Profile Avatar -->
+              <div class="flex items-center space-x-3">
+                <img
+                  src="https://randomuser.me/api/portraits/men/32.jpg"
+                  alt="Profile"
+                  class="w-8 h-8 rounded-full border-2 border-gray-200"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Filter Chips -->
+          <div class="filter-chips pt-4 border-t border-gray-100 mt-4">
+            <div class="filter-chip active">
+              Today <span class="count">4</span>
+            </div>
+            <div class="filter-chip">
+              This Week <span class="count">12</span>
+            </div>
+            <div class="filter-chip">
+              Upcoming <span class="count">24</span>
+            </div>
+            <div class="filter-chip">Meetings <span class="count">8</span></div>
+            <div class="filter-chip">
+              My Events <span class="count">18</span>
+            </div>
+            <div class="filter-chip">Shared <span class="count">6</span></div>
+            <div class="filter-chip">
+              High Priority <span class="count">3</span>
+            </div>
+          </div>
+        </header>
+
+        <!-- Calendar Views Container -->
+        <div class="flex-1 overflow-hidden">
+          <!-- Month View -->
+          <div id="month-view" class="calendar-view h-full p-6">
+            <!-- Days of Week Header -->
+            <div class="grid grid-cols-7 gap-1 mb-1">
+              <div class="text-center py-3 text-sm font-semibold text-gray-600">
+                Sunday
+              </div>
+              <div class="text-center py-3 text-sm font-semibold text-gray-600">
+                Monday
+              </div>
+              <div class="text-center py-3 text-sm font-semibold text-gray-600">
+                Tuesday
+              </div>
+              <div class="text-center py-3 text-sm font-semibold text-gray-600">
+                Wednesday
+              </div>
+              <div class="text-center py-3 text-sm font-semibold text-gray-600">
+                Thursday
+              </div>
+              <div class="text-center py-3 text-sm font-semibold text-gray-600">
+                Friday
+              </div>
+              <div class="text-center py-3 text-sm font-semibold text-gray-600">
+                Saturday
+              </div>
+            </div>
+
+            <!-- Calendar Grid -->
+            <div class="calendar-grid flex-1">
+              <!-- Week 1 -->
+              <div class="calendar-day other-month">
+                <div class="text-sm text-gray-400 mb-1">29</div>
+              </div>
+              <div class="calendar-day other-month">
+                <div class="text-sm text-gray-400 mb-1">30</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">1</div>
+                <div
+                  class="event-item meeting priority-high"
+                  data-event="team-standup"
+                >
+                  <div>
+                    <div class="font-medium">Team Standup</div>
+                    <div class="event-time">9:00 AM</div>
+                    <div class="flex items-center mt-1">
+                      <span class="rsvp-status rsvp-accepted">Accepted</span>
+                      <span class="shared-badge">
+                        <svg
+                          class="lock-icon"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                          />
+                        </svg>
+                        Shared
+                      </span>
+                      <div class="collaborator-stack">
+                        <img
+                          src="https://randomuser.me/api/portraits/women/44.jpg"
+                          alt="User 1"
+                          class="collaborator-avatar"
+                        />
+                        <img
+                          src="https://randomuser.me/api/portraits/men/22.jpg"
+                          alt="User 2"
+                          class="collaborator-avatar"
+                        />
+                        <img
+                          src="https://randomuser.me/api/portraits/women/68.jpg"
+                          alt="User 3"
+                          class="collaborator-avatar"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">2</div>
+                <div
+                  class="event-item personal priority-medium"
+                  data-event="gym-session"
+                >
+                  <div>
+                    <div class="font-medium">Gym Session</div>
+                    <div class="event-time">6:00 AM</div>
+                    <div class="flex items-center mt-1">
+                      <span class="rsvp-status rsvp-accepted">Going</span>
+                    </div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="event-item priority-high" data-event="client-call">
+                  <div>
+                    <div class="font-medium">Client Call</div>
+                    <div class="event-time">2:00 PM</div>
+                    <div class="flex items-center mt-1">
+                      <span class="rsvp-status rsvp-maybe">Maybe</span>
+                      <div class="collaborator-stack">
+                        <img
+                          src="https://randomuser.me/api/portraits/men/35.jpg"
+                          alt="Client"
+                          class="collaborator-avatar"
+                        />
+                        <div class="editing-indicator"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="status-dot status-tentative"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">3</div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">4</div>
+                <div
+                  class="event-item deadline priority-high"
+                  data-event="project-due"
+                >
+                  <div>
+                    <div class="font-medium">Project Due</div>
+                    <div class="event-time">11:59 PM</div>
+                  </div>
+                  <span class="status-dot status-busy"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">5</div>
+                <div
+                  class="event-item personal priority-low"
+                  data-event="weekend-trip"
+                >
+                  <div>
+                    <div class="font-medium">Weekend Trip</div>
+                    <div class="event-time">All Day</div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+
+              <!-- Week 2 -->
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">6</div>
+                <div
+                  class="event-item personal priority-low"
+                  data-event="weekend-trip-continue"
+                >
+                  <div>
+                    <div class="font-medium">Weekend Trip</div>
+                    <div class="event-time">All Day</div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">7</div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">8</div>
+                <div
+                  class="event-item meeting priority-high"
+                  data-event="sprint-planning"
+                >
+                  <div>
+                    <div class="font-medium">Sprint Planning</div>
+                    <div class="event-time">10:00 AM</div>
+                    <div class="flex items-center mt-1">
+                      <span class="rsvp-status rsvp-accepted">Accepted</span>
+                      <span class="shared-badge">
+                        <svg
+                          class="lock-icon"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                          />
+                        </svg>
+                        Team
+                      </span>
+                      <div class="collaborator-stack">
+                        <img
+                          src="https://randomuser.me/api/portraits/men/55.jpg"
+                          alt="Scrum Master"
+                          class="collaborator-avatar"
+                        />
+                        <img
+                          src="https://randomuser.me/api/portraits/women/31.jpg"
+                          alt="Developer 1"
+                          class="collaborator-avatar"
+                        />
+                        <img
+                          src="https://randomuser.me/api/portraits/men/67.jpg"
+                          alt="Developer 2"
+                          class="collaborator-avatar"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">9</div>
+                <div
+                  class="event-item priority-medium"
+                  data-event="design-review"
+                >
+                  <div>
+                    <div class="font-medium">Design Review</div>
+                    <div class="event-time">3:00 PM</div>
+                  </div>
+                  <span class="status-dot status-tentative"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">10</div>
+                <div
+                  class="event-item meeting priority-high"
+                  data-event="all-hands"
+                >
+                  <div>
+                    <div class="font-medium">All Hands</div>
+                    <div class="event-time">1:00 PM</div>
+                    <div class="flex items-center mt-1">
+                      <span class="rsvp-status rsvp-accepted">Accepted</span>
+                      <span class="shared-badge">
+                        <svg
+                          class="lock-icon"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                          />
+                        </svg>
+                        Company
+                      </span>
+                      <div class="collaborator-stack">
+                        <img
+                          src="https://randomuser.me/api/portraits/men/32.jpg"
+                          alt="CEO"
+                          class="collaborator-avatar"
+                        />
+                        <img
+                          src="https://randomuser.me/api/portraits/women/28.jpg"
+                          alt="HR"
+                          class="collaborator-avatar"
+                        />
+                        <div class="editing-indicator"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">11</div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">12</div>
+                <div
+                  class="event-item personal priority-low"
+                  data-event="date-night"
+                >
+                  <div>
+                    <div class="font-medium">Date Night</div>
+                    <div class="event-time">7:00 PM</div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+
+              <!-- Week 3 -->
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">13</div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">14</div>
+                <div
+                  class="event-item meeting priority-medium"
+                  data-event="one-on-one"
+                >
+                  <div>
+                    <div class="font-medium">1:1 with Manager</div>
+                    <div class="event-time">11:00 AM</div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">15</div>
+                <div class="event-item priority-high" data-event="product-demo">
+                  <div>
+                    <div class="font-medium">Product Demo</div>
+                    <div class="event-time">2:00 PM</div>
+                    <div class="flex items-center mt-1">
+                      <span class="rsvp-status rsvp-accepted">Presenting</span>
+                      <span class="shared-badge">
+                        <svg
+                          class="lock-icon"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                          />
+                        </svg>
+                        Live
+                      </span>
+                      <div class="collaborator-stack">
+                        <img
+                          src="https://randomuser.me/api/portraits/women/28.jpg"
+                          alt="PM"
+                          class="collaborator-avatar"
+                        />
+                        <img
+                          src="https://randomuser.me/api/portraits/men/45.jpg"
+                          alt="Dev"
+                          class="collaborator-avatar"
+                        />
+                        <img
+                          src="https://randomuser.me/api/portraits/women/33.jpg"
+                          alt="Designer"
+                          class="collaborator-avatar"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div
+                  class="event-item meeting priority-medium"
+                  data-event="team-sync"
+                >
+                  <div>
+                    <div class="font-medium">Team Sync</div>
+                    <div class="event-time">4:00 PM</div>
+                    <div class="flex items-center mt-1">
+                      <span class="rsvp-status rsvp-maybe">Maybe</span>
+                      <div class="collaborator-stack">
+                        <img
+                          src="https://randomuser.me/api/portraits/men/19.jpg"
+                          alt="Team Lead"
+                          class="collaborator-avatar"
+                        />
+                        <div class="editing-indicator"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="status-dot status-tentative"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">16</div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">17</div>
+                <div
+                  class="event-item personal priority-medium"
+                  data-event="doctor-appt"
+                >
+                  <div>
+                    <div class="font-medium">Doctor Appt</div>
+                    <div class="event-time">9:30 AM</div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">18</div>
+                <div
+                  class="event-item deadline priority-high"
+                  data-event="report-due"
+                >
+                  <div>
+                    <div class="font-medium">Report Due</div>
+                    <div class="event-time">5:00 PM</div>
+                  </div>
+                  <span class="status-dot status-busy"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">19</div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+
+              <!-- Week 4 -->
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">20</div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">21</div>
+                <div
+                  class="event-item meeting priority-high"
+                  data-event="sprint-review"
+                >
+                  <div>
+                    <div class="font-medium">Sprint Review</div>
+                    <div class="event-time">10:00 AM</div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day today">
+                <div class="text-sm font-bold mb-2">22</div>
+                <div
+                  class="event-item priority-high"
+                  data-event="board-meeting"
+                >
+                  <div>
+                    <div class="font-medium">Board Meeting</div>
+                    <div class="event-time">10:00 AM</div>
+                    <div class="flex items-center mt-1">
+                      <span class="rsvp-status rsvp-accepted">Accepted</span>
+                      <span class="shared-badge">
+                        <svg
+                          class="lock-icon"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                          />
+                        </svg>
+                        Team
+                      </span>
+                      <div class="collaborator-stack">
+                        <img
+                          src="https://randomuser.me/api/portraits/men/32.jpg"
+                          alt="CEO"
+                          class="collaborator-avatar"
+                        />
+                        <img
+                          src="https://randomuser.me/api/portraits/women/65.jpg"
+                          alt="CFO"
+                          class="collaborator-avatar"
+                        />
+                        <img
+                          src="https://randomuser.me/api/portraits/men/71.jpg"
+                          alt="CTO"
+                          class="collaborator-avatar"
+                        />
+                        <img
+                          src="https://randomuser.me/api/portraits/women/23.jpg"
+                          alt="VP"
+                          class="collaborator-avatar"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div
+                  class="event-item personal priority-low"
+                  data-event="lunch-sarah"
+                >
+                  <div>
+                    <div class="font-medium">Lunch with Sarah</div>
+                    <div class="event-time">12:30 PM</div>
+                    <div class="flex items-center mt-1">
+                      <span class="rsvp-status rsvp-accepted">Confirmed</span>
+                      <div class="collaborator-stack">
+                        <img
+                          src="https://randomuser.me/api/portraits/women/47.jpg"
+                          alt="Sarah"
+                          class="collaborator-avatar"
+                        />
+                        <div class="editing-indicator"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">23</div>
+                <div
+                  class="event-item meeting priority-medium"
+                  data-event="planning-session"
+                >
+                  <div>
+                    <div class="font-medium">Planning Session</div>
+                    <div class="event-time">11:00 AM</div>
+                  </div>
+                  <span class="status-dot status-tentative"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">24</div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">25</div>
+                <div
+                  class="event-item personal priority-low"
+                  data-event="concert"
+                >
+                  <div>
+                    <div class="font-medium">Concert</div>
+                    <div class="event-time">7:00 PM</div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">26</div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+
+              <!-- Week 5 -->
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">27</div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">28</div>
+                <div
+                  class="event-item meeting priority-medium"
+                  data-event="retrospective"
+                >
+                  <div>
+                    <div class="font-medium">Retrospective</div>
+                    <div class="event-time">3:00 PM</div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">29</div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">30</div>
+                <div
+                  class="event-item deadline priority-high"
+                  data-event="q3-review"
+                >
+                  <div>
+                    <div class="font-medium">Q3 Review</div>
+                    <div class="event-time">4:00 PM</div>
+                  </div>
+                  <span class="status-dot status-busy"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day">
+                <div class="text-sm font-medium mb-2">31</div>
+                <div
+                  class="event-item personal priority-low"
+                  data-event="vacation-start"
+                >
+                  <div>
+                    <div class="font-medium">Vacation Start</div>
+                    <div class="event-time">All Day</div>
+                  </div>
+                  <span class="status-dot status-confirmed"></span>
+                </div>
+                <div class="add-event-placeholder">+ Add Event</div>
+              </div>
+              <div class="calendar-day other-month">
+                <div class="text-sm text-gray-400 mb-1">1</div>
+              </div>
+              <div class="calendar-day other-month">
+                <div class="text-sm text-gray-400 mb-1">2</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Week View -->
+          <div id="week-view" class="week-view h-full p-6">
+            <div class="h-full flex flex-col">
+              <div class="week-header bg-white border-b">
+                <div class="time-slot"></div>
+                <div class="text-center py-4 border-r border-gray-200">
+                  <div class="text-sm text-gray-500">Sun</div>
+                  <div class="text-lg font-semibold">20</div>
+                </div>
+                <div class="text-center py-4 border-r border-gray-200">
+                  <div class="text-sm text-gray-500">Mon</div>
+                  <div class="text-lg font-semibold">21</div>
+                </div>
+                <div
+                  class="text-center py-4 border-r border-gray-200 bg-blue-50"
+                >
+                  <div class="text-sm text-blue-600">Tue</div>
+                  <div class="text-lg font-semibold text-blue-600">22</div>
+                </div>
+                <div class="text-center py-4 border-r border-gray-200">
+                  <div class="text-sm text-gray-500">Wed</div>
+                  <div class="text-lg font-semibold">23</div>
+                </div>
+                <div class="text-center py-4 border-r border-gray-200">
+                  <div class="text-sm text-gray-500">Thu</div>
+                  <div class="text-lg font-semibold">24</div>
+                </div>
+                <div class="text-center py-4 border-r border-gray-200">
+                  <div class="text-sm text-gray-500">Fri</div>
+                  <div class="text-lg font-semibold">25</div>
+                </div>
+                <div class="text-center py-4">
+                  <div class="text-sm text-gray-500">Sat</div>
+                  <div class="text-lg font-semibold">26</div>
+                </div>
+              </div>
+              <div class="flex-1 overflow-y-auto">
+                <div class="week-body">
+                  <div class="space-y-0">
+                    <div class="time-slot">9 AM</div>
+                    <div class="time-slot">10 AM</div>
+                    <div class="time-slot">11 AM</div>
+                    <div class="time-slot">12 PM</div>
+                    <div class="time-slot">1 PM</div>
+                    <div class="time-slot">2 PM</div>
+                    <div class="time-slot">3 PM</div>
+                    <div class="time-slot">4 PM</div>
+                    <div class="time-slot">5 PM</div>
+                    <div class="time-slot">6 PM</div>
+                  </div>
+                  <div class="day-column">
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                  </div>
+                  <div class="day-column">
+                    <div class="hour-row"></div>
+                    <div class="hour-row">
+                      <div
+                        class="absolute top-2 left-2 right-2 bg-blue-500 text-white p-2 rounded text-sm"
+                      >
+                        Sprint Review
+                      </div>
+                    </div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                  </div>
+                  <div class="day-column">
+                    <div class="hour-row"></div>
+                    <div class="hour-row">
+                      <div
+                        class="absolute top-2 left-2 right-2 bg-green-500 text-white p-2 rounded text-sm"
+                      >
+                        Board Meeting
+                      </div>
+                    </div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row">
+                      <div
+                        class="absolute top-2 left-2 right-2 bg-yellow-500 text-white p-2 rounded text-sm"
+                      >
+                        Lunch with Sarah
+                      </div>
+                    </div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                  </div>
+                  <div class="day-column">
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row">
+                      <div
+                        class="absolute top-2 left-2 right-2 bg-blue-500 text-white p-2 rounded text-sm"
+                      >
+                        Planning Session
+                      </div>
+                    </div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                  </div>
+                  <div class="day-column">
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                  </div>
+                  <div class="day-column">
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row">
+                      <div
+                        class="absolute top-2 left-2 right-2 bg-yellow-500 text-white p-2 rounded text-sm"
+                      >
+                        Concert
+                      </div>
+                    </div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                  </div>
+                  <div class="day-column">
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                    <div class="hour-row"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Day View -->
+          <div id="day-view" class="day-view h-full p-6">
+            <div class="max-w-4xl mx-auto">
+              <h2 class="text-xl font-bold mb-6">Tuesday, July 22, 2025</h2>
+              <div class="space-y-4">
+                <div class="bg-white rounded-lg shadow-sm border p-4">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="font-semibold text-gray-900">Board Meeting</h3>
+                      <p class="text-sm text-gray-600">10:00 AM - 11:30 AM</p>
+                      <p class="text-sm text-gray-500">Conference Room A</p>
+                    </div>
+                    <div class="w-4 h-4 bg-green-500 rounded-full"></div>
+                  </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm border p-4">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h3 class="font-semibold text-gray-900">
+                        Lunch with Sarah
+                      </h3>
+                      <p class="text-sm text-gray-600">12:30 PM - 1:30 PM</p>
+                      <p class="text-sm text-gray-500">Downtown Cafe</p>
+                    </div>
+                    <div class="w-4 h-4 bg-yellow-500 rounded-full"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Agenda View -->
+          <div id="agenda-view" class="agenda-view h-full p-6">
+            <div class="max-w-4xl mx-auto">
+              <h2 class="text-xl font-bold mb-6">Upcoming Events</h2>
+              <div class="bg-white rounded-lg shadow-sm border">
+                <div class="agenda-item">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="flex items-center space-x-3">
+                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <div>
+                          <h3 class="font-semibold">Board Meeting</h3>
+                          <p class="text-sm text-gray-600">Today at 10:00 AM</p>
+                        </div>
+                      </div>
+                    </div>
+                    <span
+                      class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded"
+                      >Meeting</span
+                    >
+                  </div>
+                </div>
+                <div class="agenda-item">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="flex items-center space-x-3">
+                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div>
+                          <h3 class="font-semibold">Lunch with Sarah</h3>
+                          <p class="text-sm text-gray-600">Today at 12:30 PM</p>
+                        </div>
+                      </div>
+                    </div>
+                    <span
+                      class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded"
+                      >Personal</span
+                    >
+                  </div>
+                </div>
+                <div class="agenda-item">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <div class="flex items-center space-x-3">
+                        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <div>
+                          <h3 class="font-semibold">Planning Session</h3>
+                          <p class="text-sm text-gray-600">
+                            Tomorrow at 11:00 AM
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    <span
+                      class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded"
+                      >Meeting</span
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right Drawer (Event Details) -->
+      <aside
+        id="right-drawer"
+        class="right-drawer w-96 bg-gray-50 border-l border-gray-200 p-6 lg:translate-x-0 overflow-y-auto"
+      >
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-lg font-semibold">Event Details</h2>
+          <button id="close-drawer" class="p-1 hover:bg-gray-200 rounded">
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Basic Information Card -->
+        <div class="form-card">
+          <h3>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            Basic Information
+          </h3>
+
+          <div class="space-y-4">
+            <!-- Event Title -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Event Title</label
+              >
+              <input
+                type="text"
+                value="Board Meeting"
+                class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Enter event title..."
+              />
+            </div>
+
+            <!-- Event Type & Status -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Event Type</label
+                >
+                <select
+                  class="custom-select w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option selected>Work Meeting</option>
+                  <option>Personal</option>
+                  <option>Reminder</option>
+                  <option>Deadline</option>
+                  <option>Social</option>
+                  <option>Travel</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Status</label
+                >
+                <select
+                  class="custom-select w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option selected>Confirmed</option>
+                  <option>Tentative</option>
+                  <option>Busy</option>
+                  <option>Free</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Description</label
+              >
+              <textarea
+                rows="3"
+                class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Add event description..."
+              >
+Quarterly board meeting to review progress and strategic initiatives.</textarea
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Date & Time Card -->
+        <div class="form-card">
+          <h3>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            Date & Time
+          </h3>
+
+          <div class="space-y-4">
+            <!-- All Day Toggle -->
+            <div class="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="all-day"
+                class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              />
+              <label for="all-day" class="text-sm text-gray-700"
+                >All day event</label
+              >
+            </div>
+
+            <!-- Start Date & Time -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Start Date</label
+                >
+                <input
+                  type="date"
+                  value="2025-07-22"
+                  class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Start Time</label
+                >
+                <input
+                  type="time"
+                  value="10:00"
+                  class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <!-- End Date & Time -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >End Date</label
+                >
+                <input
+                  type="date"
+                  value="2025-07-22"
+                  class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >End Time</label
+                >
+                <input
+                  type="time"
+                  value="11:30"
+                  class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            <!-- Time Zone -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Time Zone</label
+              >
+              <select
+                class="custom-select w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option selected>UTC-8 (Pacific Time)</option>
+                <option>UTC-5 (Eastern Time)</option>
+                <option>UTC+0 (GMT)</option>
+                <option>UTC+1 (Central European Time)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Card -->
+        <div class="form-card">
+          <h3>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            Location
+          </h3>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Location</label
+              >
+              <input
+                type="text"
+                value="Conference Room A"
+                class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Add location or video call link..."
+              />
+            </div>
+
+            <!-- Virtual Meeting Options -->
+            <div class="flex items-center space-x-4">
+              <label class="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="meeting-type"
+                  value="in-person"
+                  checked
+                  class="text-blue-600"
+                />
+                <span class="text-sm text-gray-700">In-person</span>
+              </label>
+              <label class="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="meeting-type"
+                  value="virtual"
+                  class="text-blue-600"
+                />
+                <span class="text-sm text-gray-700">Virtual</span>
+              </label>
+              <label class="flex items-center space-x-2">
+                <input
+                  type="radio"
+                  name="meeting-type"
+                  value="hybrid"
+                  class="text-blue-600"
+                />
+                <span class="text-sm text-gray-700">Hybrid</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendees Card -->
+        <div class="form-card">
+          <h3>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+              />
+            </svg>
+            Attendees
+          </h3>
+
+          <div class="space-y-4">
+            <!-- Current Attendees -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Invited (3)</label
+              >
+              <div class="flex flex-wrap gap-2">
+                <div class="user-chip">
+                  <img
+                    src="https://randomuser.me/api/portraits/men/32.jpg"
+                    alt="John Doe"
+                  />
+                  <span>John Doe</span>
+                  <span class="remove-btn">×</span>
+                </div>
+                <div class="user-chip">
+                  <img
+                    src="https://randomuser.me/api/portraits/women/44.jpg"
+                    alt="Sarah Wilson"
+                  />
+                  <span>Sarah Wilson</span>
+                  <span class="remove-btn">×</span>
+                </div>
+                <div class="user-chip">
+                  <img
+                    src="https://randomuser.me/api/portraits/men/45.jpg"
+                    alt="Mike Chen"
+                  />
+                  <span>Mike Chen</span>
+                  <span class="remove-btn">×</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Add Attendees -->
+            <div>
+              <input
+                type="email"
+                placeholder="Add attendee by email..."
+                class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+
+            <!-- RSVP Summary -->
+            <div class="bg-gray-50 rounded-lg p-3">
+              <div class="text-sm text-gray-600">
+                <div class="flex justify-between">
+                  <span>✅ Accepted:</span>
+                  <span class="font-medium">2</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>❓ Pending:</span>
+                  <span class="font-medium">1</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>❌ Declined:</span>
+                  <span class="font-medium">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reminders Card -->
+        <div class="form-card">
+          <h3>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 17h5l-5-5 5-5m-10 10l5-5-5-5"
+              />
+            </svg>
+            Reminders
+          </h3>
+
+          <div class="space-y-3">
+            <div
+              class="flex items-center justify-between p-2 bg-gray-50 rounded"
+            >
+              <span class="text-sm">📱 15 minutes before</span>
+              <button class="text-red-600 hover:text-red-800 text-sm">
+                Remove
+              </button>
+            </div>
+            <div
+              class="flex items-center justify-between p-2 bg-gray-50 rounded"
+            >
+              <span class="text-sm">📧 1 day before</span>
+              <button class="text-red-600 hover:text-red-800 text-sm">
+                Remove
+              </button>
+            </div>
+            <button
+              class="w-full py-2 text-blue-600 hover:text-blue-800 text-sm border border-blue-200 rounded hover:bg-blue-50"
+            >
+              + Add Custom Reminder
+            </button>
+          </div>
+        </div>
+
+        <!-- Recurrence Card -->
+        <div class="form-card">
+          <h3>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              />
+            </svg>
+            Recurrence
+          </h3>
+
+          <div class="space-y-4">
+            <select
+              class="custom-select w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option selected>Does not repeat</option>
+              <option>Daily</option>
+              <option>Weekly</option>
+              <option>Monthly</option>
+              <option>Yearly</option>
+              <option>Custom...</option>
+            </select>
+
+            <div class="recurrence-pattern">
+              <p class="font-medium text-gray-700">No recurrence set</p>
+              <p class="text-gray-500 mt-1">This is a one-time event</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Creator & Metadata Card -->
+        <div class="form-card">
+          <h3>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+              />
+            </svg>
+            Event Details
+          </h3>
+
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-600">Created by:</span>
+              <div class="flex items-center space-x-2">
+                <img
+                  src="https://randomuser.me/api/portraits/men/32.jpg"
+                  alt="Creator"
+                  class="w-6 h-6 rounded-full"
+                />
+                <span class="text-sm font-medium">You</span>
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-600">Created:</span>
+              <span class="text-sm text-gray-900">Jul 20, 2025 at 2:30 PM</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-600">Last modified:</span>
+              <span class="text-sm text-gray-900">Jul 22, 2025 at 9:15 AM</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-600">Privacy:</span>
+              <select class="text-sm border border-gray-200 rounded px-2 py-1">
+                <option selected>Private</option>
+                <option>Public</option>
+                <option>Shared</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attendees & RSVP Card -->
+        <div class="form-card">
+          <h3>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+              />
+            </svg>
+            Attendees & RSVP
+          </h3>
+
+          <!-- RSVP Status Selection -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Your Response</label
+            >
+            <div class="flex gap-2">
+              <button
+                class="rsvp-status rsvp-accepted cursor-pointer hover:opacity-80"
+              >
+                ✓ Accepted
+              </button>
+              <button
+                class="rsvp-status rsvp-declined cursor-pointer hover:opacity-80"
+              >
+                ✗ Declined
+              </button>
+              <button
+                class="rsvp-status rsvp-maybe cursor-pointer hover:opacity-80"
+              >
+                ? Maybe
+              </button>
+            </div>
+          </div>
+
+          <!-- Attendee List -->
+          <div class="space-y-3">
+            <div
+              class="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+            >
+              <div class="flex items-center space-x-3">
+                <img
+                  src="https://randomuser.me/api/portraits/men/32.jpg"
+                  alt="CEO"
+                  class="w-8 h-8 rounded-full"
+                />
+                <div>
+                  <div class="font-medium text-sm">John Smith (You)</div>
+                  <div class="text-xs text-gray-500">CEO</div>
+                </div>
+              </div>
+              <span class="rsvp-status rsvp-accepted">Accepted</span>
+            </div>
+
+            <div
+              class="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+            >
+              <div class="flex items-center space-x-3">
+                <img
+                  src="https://randomuser.me/api/portraits/women/65.jpg"
+                  alt="CFO"
+                  class="w-8 h-8 rounded-full"
+                />
+                <div>
+                  <div class="font-medium text-sm">Sarah Johnson</div>
+                  <div class="text-xs text-gray-500">CFO</div>
+                </div>
+                <div class="editing-indicator"></div>
+              </div>
+              <span class="rsvp-status rsvp-accepted">Accepted</span>
+            </div>
+
+            <div
+              class="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+            >
+              <div class="flex items-center space-x-3">
+                <img
+                  src="https://randomuser.me/api/portraits/men/71.jpg"
+                  alt="CTO"
+                  class="w-8 h-8 rounded-full"
+                />
+                <div>
+                  <div class="font-medium text-sm">Mike Wilson</div>
+                  <div class="text-xs text-gray-500">CTO</div>
+                </div>
+              </div>
+              <span class="rsvp-status rsvp-maybe">Maybe</span>
+            </div>
+
+            <div
+              class="flex items-center justify-between p-2 bg-gray-50 rounded-lg"
+            >
+              <div class="flex items-center space-x-3">
+                <img
+                  src="https://randomuser.me/api/portraits/women/23.jpg"
+                  alt="VP"
+                  class="w-8 h-8 rounded-full"
+                />
+                <div>
+                  <div class="font-medium text-sm">Lisa Chen</div>
+                  <div class="text-xs text-gray-500">VP Marketing</div>
+                </div>
+              </div>
+              <span class="rsvp-status rsvp-pending">Pending</span>
+            </div>
+          </div>
+
+          <!-- Add Attendees -->
+          <div class="mt-4">
+            <input
+              type="email"
+              placeholder="Add attendee by email..."
+              class="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            />
+          </div>
+        </div>
+
+        <!-- Comments & Discussion Card -->
+        <div class="form-card">
+          <h3>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+              />
+            </svg>
+            Comments & Discussion
+          </h3>
+
+          <!-- Comment Thread -->
+          <div class="comment-thread">
+            <div class="comment-item">
+              <img
+                src="https://randomuser.me/api/portraits/women/65.jpg"
+                alt="Sarah"
+                class="comment-avatar"
+              />
+              <div class="comment-content">
+                <div class="comment-author">Sarah Johnson</div>
+                <div class="comment-text">
+                  Should we prepare the Q3 financial overview for this meeting?
+                </div>
+                <div class="comment-timestamp">2 hours ago</div>
+              </div>
+            </div>
+
+            <div class="comment-item">
+              <img
+                src="https://randomuser.me/api/portraits/men/71.jpg"
+                alt="Mike"
+                class="comment-avatar"
+              />
+              <div class="comment-content">
+                <div class="comment-author">Mike Wilson</div>
+                <div class="comment-text">
+                  Good idea! I'll have the tech roadmap slides ready as well.
+                  Any specific metrics you want me to highlight?
+                </div>
+                <div class="comment-timestamp">1 hour ago</div>
+              </div>
+            </div>
+
+            <div class="comment-item">
+              <img
+                src="https://randomuser.me/api/portraits/men/32.jpg"
+                alt="You"
+                class="comment-avatar"
+              />
+              <div class="comment-content">
+                <div class="comment-author">John Smith (You)</div>
+                <div class="comment-text">
+                  Focus on user growth and infrastructure scaling. We'll need
+                  those numbers for the board.
+                </div>
+                <div class="comment-timestamp">30 minutes ago</div>
+              </div>
+            </div>
+
+            <!-- Comment Input -->
+            <div class="comment-input">
+              <img
+                src="https://randomuser.me/api/portraits/men/32.jpg"
+                alt="You"
+                class="comment-avatar"
+              />
+              <textarea
+                rows="2"
+                placeholder="Add a comment..."
+                class="resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              ></textarea>
+              <button>Post</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex space-x-3 pt-4">
+          <button
+            class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            Save Changes
+          </button>
+          <button
+            class="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+          >
+            Delete
+          </button>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Event Tooltip -->
+    <div id="event-tooltip" class="event-tooltip">
+      <div class="flex items-start justify-between mb-3">
+        <h4 class="font-semibold text-gray-900 text-sm" id="tooltip-title">
+          Board Meeting
+        </h4>
+        <span class="status-dot status-confirmed ml-2 mt-1"></span>
+      </div>
+      <div class="space-y-2 text-sm text-gray-600">
+        <div class="flex items-center">
+          <svg
+            class="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span id="tooltip-time">10:00 AM - 11:30 AM</span>
+        </div>
+        <div class="flex items-center">
+          <svg
+            class="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+            />
+          </svg>
+          <span id="tooltip-location">Conference Room A</span>
+        </div>
+        <div class="flex items-center">
+          <svg
+            class="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"
+            />
+          </svg>
+          <div class="flex -space-x-1">
+            <img
+              src="https://randomuser.me/api/portraits/men/32.jpg"
+              class="w-5 h-5 rounded-full border border-white"
+              title="John Doe"
+            />
+            <img
+              src="https://randomuser.me/api/portraits/women/44.jpg"
+              class="w-5 h-5 rounded-full border border-white"
+              title="Sarah Wilson"
+            />
+            <span class="text-xs ml-1">+1 more</span>
+          </div>
+        </div>
+        <p
+          class="text-xs text-gray-500 mt-2 leading-relaxed"
+          id="tooltip-description"
+        >
+          Quarterly board meeting to review progress and strategic initiatives.
+        </p>
+      </div>
+    </div>
+
+    <!-- Floating Add Button -->
+    <button
+      class="floating-add-btn flex items-center justify-center text-white"
+    >
+      <svg
+        class="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+        />
+      </svg>
+    </button>
+
+    <script>
+      // Dark mode toggle functionality
+      const themeToggle = document.getElementById("theme-toggle");
+      const body = document.body;
+      const sunIcon = themeToggle.querySelector(".sun-icon");
+      const moonIcon = themeToggle.querySelector(".moon-icon");
+
+      // Check for saved theme preference or default to light mode
+      const currentTheme = localStorage.getItem("theme") || "light";
+      if (currentTheme === "dark") {
+        body.classList.add("dark");
+        themeToggle.classList.add("dark");
+        sunIcon.classList.add("hidden");
+        moonIcon.classList.remove("hidden");
+      }
+
+      themeToggle.addEventListener("click", () => {
+        body.classList.toggle("dark");
+        themeToggle.classList.toggle("dark");
+
+        if (body.classList.contains("dark")) {
+          sunIcon.classList.add("hidden");
+          moonIcon.classList.remove("hidden");
+          localStorage.setItem("theme", "dark");
+        } else {
+          sunIcon.classList.remove("hidden");
+          moonIcon.classList.add("hidden");
+          localStorage.setItem("theme", "light");
+        }
+      });
+
+      // Filter chips functionality
+      const filterChips = document.querySelectorAll(".filter-chip");
+      filterChips.forEach((chip) => {
+        chip.addEventListener("click", () => {
+          // Remove active class from all chips
+          filterChips.forEach((c) => c.classList.remove("active"));
+          // Add active class to clicked chip
+          chip.classList.add("active");
+
+          // Here you would filter events based on the selected chip
+          console.log("Filter selected:", chip.textContent.trim());
+        });
+      });
+
+      // Search functionality with suggestions
+      const searchInput = document.querySelector(".enhanced-search input");
+      const searchSuggestions = document.querySelector(".search-suggestions");
+
+      searchInput.addEventListener("focus", () => {
+        searchSuggestions.style.display = "block";
+      });
+
+      searchInput.addEventListener("blur", () => {
+        // Delay hiding to allow clicking on suggestions
+        setTimeout(() => {
+          searchSuggestions.style.display = "none";
+        }, 200);
+      });
+
+      searchInput.addEventListener("input", (e) => {
+        const query = e.target.value.toLowerCase();
+        if (query.length > 0) {
+          searchSuggestions.style.display = "block";
+          // Filter suggestions based on query
+          console.log("Searching for:", query);
+        } else {
+          searchSuggestions.style.display = "none";
+        }
+      });
+
+      // Search suggestion clicks
+      const searchSuggestionItems =
+        document.querySelectorAll(".search-suggestion");
+      searchSuggestionItems.forEach((item) => {
+        item.addEventListener("click", () => {
+          const suggestionText =
+            item.querySelector("div:last-child").textContent;
+          searchInput.value = suggestionText;
+          searchSuggestions.style.display = "none";
+          console.log("Selected suggestion:", suggestionText);
+        });
+      });
+
+      // RSVP status button interactions
+      const rsvpButtons = document.querySelectorAll(
+        ".rsvp-status.cursor-pointer"
+      );
+      rsvpButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          // Remove active state from other RSVP buttons in same group
+          const parent = button.parentElement;
+          parent.querySelectorAll(".rsvp-status").forEach((btn) => {
+            btn.style.opacity = "0.6";
+          });
+          button.style.opacity = "1";
+          console.log("RSVP status changed to:", button.textContent.trim());
+        });
+      });
+
+      // Event data for tooltips
+      const eventData = {
+        "team-standup": {
+          title: "Team Standup",
+          time: "9:00 AM - 9:30 AM",
+          location: "Video Call",
+          description: "Daily team sync to discuss progress and blockers.",
+          status: "confirmed",
+          attendees: 5,
+        },
+        "gym-session": {
+          title: "Gym Session",
+          time: "6:00 AM - 7:30 AM",
+          location: "Local Gym",
+          description: "Personal workout session - strength training focus.",
+          status: "confirmed",
+          attendees: 0,
+        },
+        "client-call": {
+          title: "Client Call",
+          time: "2:00 PM - 3:00 PM",
+          location: "Phone Call",
+          description:
+            "Quarterly check-in with key client to discuss project status.",
+          status: "tentative",
+          attendees: 3,
+        },
+        "board-meeting": {
+          title: "Board Meeting",
+          time: "10:00 AM - 11:30 AM",
+          location: "Conference Room A",
+          description:
+            "Quarterly board meeting to review progress and strategic initiatives.",
+          status: "confirmed",
+          attendees: 8,
+        },
+        "lunch-sarah": {
+          title: "Lunch with Sarah",
+          time: "12:30 PM - 1:30 PM",
+          location: "Downtown Cafe",
+          description: "Catch up lunch with Sarah from marketing team.",
+          status: "confirmed",
+          attendees: 2,
+        },
+      };
+
+      // Tooltip functionality
+      const tooltip = document.getElementById("event-tooltip");
+      let tooltipTimeout;
+
+      function showTooltip(event, eventId) {
+        clearTimeout(tooltipTimeout);
+
+        const data = eventData[eventId];
+        if (!data) return;
+
+        // Update tooltip content
+        document.getElementById("tooltip-title").textContent = data.title;
+        document.getElementById("tooltip-time").textContent = data.time;
+        document.getElementById("tooltip-location").textContent = data.location;
+        document.getElementById("tooltip-description").textContent =
+          data.description;
+
+        // Update status indicator
+        const statusDot = tooltip.querySelector(".status-dot");
+        statusDot.className = `status-dot status-${data.status}`;
+
+        // Position tooltip
+        const rect = event.target.getBoundingClientRect();
+        const tooltipRect = tooltip.getBoundingClientRect();
+
+        let left = rect.left + rect.width / 2 - 280 / 2;
+        let top = rect.top - tooltipRect.height - 12;
+
+        // Adjust if tooltip goes off screen
+        if (left < 10) left = 10;
+        if (left + 280 > window.innerWidth - 10) left = window.innerWidth - 290;
+        if (top < 10) top = rect.bottom + 12;
+
+        tooltip.style.left = left + "px";
+        tooltip.style.top = top + "px";
+        tooltip.classList.add("show");
+      }
+
+      function hideTooltip() {
+        tooltipTimeout = setTimeout(() => {
+          tooltip.classList.remove("show");
+        }, 200);
+      }
+
+      // View switching functionality
+      const viewButtons = document.querySelectorAll(".view-toggle");
+      const views = {
+        month: document.getElementById("month-view"),
+        week: document.getElementById("week-view"),
+        day: document.getElementById("day-view"),
+        agenda: document.getElementById("agenda-view"),
+      };
+
+      viewButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          // Remove active class from all buttons
+          viewButtons.forEach((btn) => btn.classList.remove("active"));
+          // Add active class to clicked button
+          button.classList.add("active");
+
+          // Hide all views
+          Object.values(views).forEach((view) => {
+            view.classList.remove("active");
+            view.style.display = "none";
+          });
+
+          // Show selected view
+          const selectedView = button.dataset.view;
+          if (views[selectedView]) {
+            views[selectedView].style.display = "block";
+            views[selectedView].classList.add("active");
+          }
+        });
+      });
+
+      // Event item click and hover handlers
+      document.querySelectorAll(".event-item").forEach((item) => {
+        const eventId = item.getAttribute("data-event");
+
+        // Click handler
+        item.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const drawer = document.getElementById("right-drawer");
+          drawer.classList.add("open");
+
+          // Update drawer with event data
+          if (eventData[eventId]) {
+            const data = eventData[eventId];
+            drawer.querySelector('input[type="text"]').value = data.title;
+            drawer.querySelector("textarea").value = data.description;
+          }
+        });
+
+        // Hover handlers for tooltip
+        item.addEventListener("mouseenter", (e) => {
+          showTooltip(e, eventId);
+        });
+
+        item.addEventListener("mouseleave", () => {
+          hideTooltip();
+        });
+      });
+
+      // Tooltip hover handlers to keep it visible
+      tooltip.addEventListener("mouseenter", () => {
+        clearTimeout(tooltipTimeout);
+      });
+
+      tooltip.addEventListener("mouseleave", () => {
+        hideTooltip();
+      });
+
+      // Calendar day click handlers
+      document.querySelectorAll(".calendar-day").forEach((day) => {
+        day.addEventListener("click", (e) => {
+          if (
+            !e.target.classList.contains("event-item") &&
+            !e.target.closest(".event-item")
+          ) {
+            // Clicked on empty day - show create event form
+            const drawer = document.getElementById("right-drawer");
+            drawer.classList.add("open");
+            // Clear form for new event
+            drawer.querySelector('input[type="text"]').value = "";
+            drawer.querySelector("textarea").value = "";
+          }
+        });
+      });
+
+      // Close drawer
+      document.getElementById("close-drawer").addEventListener("click", () => {
+        document.getElementById("right-drawer").classList.remove("open");
+      });
+
+      // Floating add button
+      document
+        .querySelector(".floating-add-btn")
+        .addEventListener("click", () => {
+          const drawer = document.getElementById("right-drawer");
+          drawer.classList.add("open");
+          // Clear form for new event
+          drawer.querySelector('input[type="text"]').value = "";
+          drawer.querySelector("textarea").value = "";
+        });
+
+      // Mobile responsiveness
+      function handleResize() {
+        const sidebar = document.querySelector(".left-sidebar");
+        const drawer = document.getElementById("right-drawer");
+
+        if (window.innerWidth < 768) {
+          sidebar.classList.remove("open");
+        }
+
+        if (window.innerWidth < 1024) {
+          drawer.classList.remove("open");
+        }
+      }
+
+      // Mobile menu toggle
+      document
+        .querySelector(".lg\\:hidden button")
+        .addEventListener("click", () => {
+          document.querySelector(".left-sidebar").classList.toggle("open");
+        });
+
+      window.addEventListener("resize", handleResize);
+
+      // Mini calendar interaction
+      document.querySelectorAll(".mini-calendar .day").forEach((day) => {
+        day.addEventListener("click", () => {
+          // Remove selected class from all days
+          document
+            .querySelectorAll(".mini-calendar .day")
+            .forEach((d) => d.classList.remove("selected"));
+          // Add selected class to clicked day
+          if (!day.classList.contains("today")) {
+            day.classList.add("selected");
+          }
+        });
+      });
+
+      // Search functionality
+      document
+        .querySelector('input[placeholder="Search events..."]')
+        .addEventListener("input", (e) => {
+          const searchTerm = e.target.value.toLowerCase();
+          document.querySelectorAll(".event-item").forEach((event) => {
+            const eventText = event.textContent.toLowerCase();
+            if (eventText.includes(searchTerm)) {
+              event.style.display = "block";
+            } else {
+              event.style.display = searchTerm ? "none" : "block";
+            }
+          });
+        });
+
+      // User chip removal functionality
+      document.querySelectorAll(".user-chip .remove-btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          btn.parentElement.remove();
+        });
+      });
+
+      // All day toggle functionality
+      document
+        .getElementById("all-day")
+        .addEventListener("change", function () {
+          const timeInputs = document.querySelectorAll('input[type="time"]');
+          timeInputs.forEach((input) => {
+            input.disabled = this.checked;
+            if (this.checked) {
+              input.style.opacity = "0.5";
+            } else {
+              input.style.opacity = "1";
+            }
+          });
+        });
+
+      // Initialize with month view
+      views.month.style.display = "block";
+      views.month.classList.add("active");
+    </script>
+  </body>
+</html>

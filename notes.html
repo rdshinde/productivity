@@ -1,0 +1,4697 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes - Productivity</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        overflow: hidden;
+      }
+
+      .gradient-bg {
+        background: linear-gradient(
+          135deg,
+          #00809d 0%,
+          #00b4d8 50%,
+          #0099cc 100%
+        );
+      }
+
+      .sidebar-item {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #6b7280;
+        font-weight: 500;
+      }
+
+      .sidebar-item:hover {
+        background: linear-gradient(
+          135deg,
+          rgba(0, 128, 157, 0.1),
+          rgba(0, 180, 216, 0.08)
+        );
+        border-radius: 8px;
+        transform: translateX(2px);
+        color: #00809d;
+      }
+
+      .sidebar-item.active {
+        background: linear-gradient(135deg, #00809d, #00b4d8);
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        transform: translateX(2px);
+      }
+
+      .search-input {
+        transition: all 0.3s ease;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+      }
+
+      .search-input:focus {
+        background: white;
+        border-color: #00b4d8;
+        box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+        outline: none;
+      }
+
+      .note-card {
+        background: white;
+        border: 1px solid #f1f5f9;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+
+      .note-card:hover {
+        border-color: #e2e8f0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        transform: translateY(-1px);
+      }
+
+      .note-card.active {
+        border-color: #00b4d8;
+        box-shadow: 0 4px 20px rgba(0, 180, 216, 0.15);
+      }
+
+      .toolbar-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        color: #64748b;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+
+      .toolbar-btn:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: #475569;
+      }
+
+      .toolbar-btn.active {
+        background: #00b4d8;
+        border-color: #00b4d8;
+        color: white;
+      }
+
+      .editor-area {
+        min-height: calc(100vh - 200px);
+        background: white;
+        border-radius: 12px;
+        border: 1px solid #f1f5f9;
+        padding: 32px;
+        font-size: 16px;
+        line-height: 1.6;
+        color: #334155;
+      }
+
+      .editor-area:focus {
+        outline: none;
+        border-color: #00b4d8;
+        box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+      }
+
+      .note-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1e293b;
+        border: none;
+        outline: none;
+        background: transparent;
+        width: 100%;
+        margin-bottom: 24px;
+        padding: 0;
+      }
+
+      .note-title::placeholder {
+        color: #94a3b8;
+        font-weight: 400;
+      }
+
+      .tag-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        color: #475569;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .tag-chip:hover {
+        background: #e2e8f0;
+        border-color: #cbd5e1;
+      }
+
+      .tag-chip.active {
+        background: #dbeafe;
+        border-color: #60a5fa;
+        color: #1d4ed8;
+      }
+
+      .floating-toolbar {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .floating-toolbar.show {
+        opacity: 1;
+        visibility: visible;
+      }
+
+      .notebook-section {
+        margin-bottom: 24px;
+      }
+
+      .notebook-header {
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: #64748b;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+        padding: 0 12px;
+      }
+
+      .count-badge {
+        background: #f1f5f9;
+        color: #64748b;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        border-radius: 12px;
+        margin-left: auto;
+      }
+
+      .sidebar-divider {
+        height: 1px;
+        background: #f1f5f9;
+        margin: 16px 0;
+      }
+
+      /* Block editor placeholder styles */
+      .editor-block {
+        margin: 16px 0;
+        padding: 8px 0;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+      }
+
+      .editor-block:hover {
+        background: #f8fafc;
+      }
+
+      .editor-block.empty {
+        color: #94a3b8;
+        font-style: italic;
+      }
+
+      .block-placeholder {
+        color: #94a3b8;
+        font-size: 14px;
+        padding: 12px 0;
+        border: 2px dashed #e2e8f0;
+        border-radius: 8px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin: 24px 0;
+      }
+
+      .block-placeholder:hover {
+        border-color: #00b4d8;
+        color: #00809d;
+        background: rgba(0, 180, 216, 0.02);
+      }
+
+      /* Block Container Styles */
+      .block-container {
+        position: relative;
+        margin: 24px 0;
+        padding-left: 32px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+      }
+
+      .block-container:hover {
+        background: rgba(248, 250, 252, 0.8);
+      }
+
+      .block-container.selected {
+        background: rgba(0, 180, 216, 0.05);
+        border-left: 3px solid #00b4d8;
+        padding-left: 29px;
+      }
+
+      /* Drag Handle Styles */
+      .block-drag-handle {
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        cursor: grab;
+        color: #94a3b8;
+        transition: all 0.2s ease;
+        border-radius: 4px;
+      }
+
+      .block-drag-handle:hover {
+        background: #e2e8f0;
+        color: #64748b;
+      }
+
+      .block-container:hover .block-drag-handle {
+        opacity: 1;
+      }
+
+      .block-drag-handle:active {
+        cursor: grabbing;
+      }
+
+      /* Block Action Buttons */
+      .block-actions {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        display: flex;
+        gap: 4px;
+        opacity: 0;
+        transition: all 0.2s ease;
+      }
+
+      .block-container:hover .block-actions {
+        opacity: 1;
+      }
+
+      .block-action-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .block-action-btn:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: #475569;
+      }
+
+      /* Inline Elements */
+      .inline-emoji {
+        font-size: 1.2em;
+        margin: 0 2px;
+        display: inline-block;
+      }
+
+      /* Code Block Styles */
+      .code-block {
+        background: #1e293b;
+        border-radius: 8px;
+        overflow: hidden;
+        margin: 16px 0;
+      }
+
+      .code-header {
+        background: #334155;
+        padding: 8px 16px;
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        border-bottom: 1px solid #475569;
+      }
+
+      .code-language {
+        color: #94a3b8;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .copy-code-btn {
+        background: transparent;
+        border: none;
+        color: #94a3b8;
+        cursor: pointer;
+        padding: 4px;
+        border-radius: 4px;
+        margin-left: auto;
+      }
+
+      .copy-code-btn:hover {
+        background: #475569;
+        color: #cbd5e1;
+      }
+
+      .code-content {
+        padding: 16px;
+        margin: 0;
+        background: #1e293b;
+        color: #e2e8f0;
+        font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        overflow-x: auto;
+      }
+
+      /* Quote Block Styles */
+      .quote-block {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        border-left: 4px solid #00b4d8;
+        border-radius: 8px;
+        padding: 24px;
+        margin: 16px 0;
+        position: relative;
+      }
+
+      .quote-icon {
+        color: #00b4d8;
+        margin-bottom: 12px;
+      }
+
+      .quote-text {
+        font-size: 1.125rem;
+        line-height: 1.7;
+        color: #334155;
+        font-style: italic;
+        margin-bottom: 12px;
+      }
+
+      .quote-author {
+        color: #64748b;
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      /* Toggle Block Styles */
+      .toggle-block {
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        overflow: hidden;
+        margin: 16px 0;
+      }
+
+      .toggle-header {
+        background: #f8fafc;
+        padding: 12px 16px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+      }
+
+      .toggle-header:hover {
+        background: #f1f5f9;
+      }
+
+      .toggle-arrow {
+        width: 16px;
+        height: 16px;
+        color: #64748b;
+        transition: transform 0.2s ease;
+      }
+
+      .toggle-block.open .toggle-arrow {
+        transform: rotate(90deg);
+      }
+
+      .toggle-content {
+        padding: 16px;
+        background: white;
+        display: none;
+      }
+
+      .toggle-block.open .toggle-content {
+        display: block;
+      }
+
+      /* Table Styles */
+      .table-container {
+        overflow-x: auto;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+      }
+
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.875rem;
+      }
+
+      .data-table th {
+        background: #f8fafc;
+        padding: 12px 16px;
+        text-align: left;
+        font-weight: 600;
+        color: #374151;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .data-table td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #4b5563;
+      }
+
+      .data-table tr:last-child td {
+        border-bottom: none;
+      }
+
+      .data-table tr:hover {
+        background: #f9fafb;
+      }
+
+      /* Status Badge Styles */
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        gap: 4px;
+      }
+
+      .status-badge.completed {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .status-badge.in-progress {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+
+      .status-badge.pending {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      /* Checklist Styles */
+      .checklist-item {
+        transition: all 0.2s ease;
+      }
+
+      .completed-item {
+        text-decoration: line-through;
+        opacity: 0.6;
+      }
+
+      .form-checkbox {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+        border: 2px solid #d1d5db;
+        transition: all 0.2s ease;
+      }
+
+      .form-checkbox:checked {
+        background: #00b4d8;
+        border-color: #00b4d8;
+      }
+
+      /* Image Block Styles */
+      .image-block {
+        margin: 16px 0;
+      }
+
+      .image-placeholder {
+        background: #f8fafc;
+        border: 2px dashed #e2e8f0;
+        border-radius: 8px;
+        padding: 48px 24px;
+        text-align: center;
+        transition: all 0.2s ease;
+      }
+
+      .image-placeholder:hover {
+        border-color: #00b4d8;
+        background: rgba(0, 180, 216, 0.02);
+      }
+
+      .upload-btn {
+        background: #00b4d8;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: all 0.2s ease;
+      }
+
+      .upload-btn:hover {
+        background: #00809d;
+      }
+
+      /* Link Embed Styles */
+      .link-embed {
+        margin: 16px 0;
+      }
+
+      .link-preview {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        display: flex;
+        gap: 12px;
+        transition: all 0.2s ease;
+        cursor: pointer;
+      }
+
+      .link-preview:hover {
+        border-color: #00b4d8;
+        box-shadow: 0 4px 12px rgba(0, 180, 216, 0.1);
+      }
+
+      .link-icon {
+        color: #00b4d8;
+        flex-shrink: 0;
+      }
+
+      .link-content {
+        flex: 1;
+      }
+
+      .link-title {
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 4px;
+      }
+
+      .link-description {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin-bottom: 4px;
+      }
+
+      .link-url {
+        color: #00b4d8;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+
+      /* Video Embed Styles */
+      .video-embed {
+        margin: 16px 0;
+      }
+
+      .video-thumbnail {
+        background: linear-gradient(135deg, #1e293b, #334155);
+        border-radius: 8px;
+        padding: 24px;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .video-thumbnail:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      }
+
+      .play-button {
+        color: white;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 64px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.2s ease;
+      }
+
+      .play-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+
+      .video-info {
+        flex: 1;
+        color: white;
+      }
+
+      .video-title {
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      .video-description {
+        opacity: 0.8;
+        font-size: 0.875rem;
+        margin-bottom: 8px;
+      }
+
+      .video-duration {
+        background: rgba(0, 0, 0, 0.6);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+      }
+
+      /* PDF Embed Styles */
+      .pdf-embed {
+        margin: 16px 0;
+      }
+
+      .pdf-preview {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 16px;
+        display: flex;
+        gap: 12px;
+        transition: all 0.2s ease;
+      }
+
+      .pdf-preview:hover {
+        border-color: #ef4444;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.1);
+      }
+
+      .pdf-icon {
+        color: #ef4444;
+        flex-shrink: 0;
+      }
+
+      .pdf-info {
+        flex: 1;
+      }
+
+      .pdf-title {
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 4px;
+      }
+
+      .pdf-description {
+        color: #64748b;
+        font-size: 0.875rem;
+        margin-bottom: 8px;
+      }
+
+      .pdf-meta {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        color: #94a3b8;
+        font-size: 0.75rem;
+      }
+
+      .download-btn {
+        background: #ef4444;
+        color: white;
+        border: none;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        cursor: pointer;
+        margin-left: auto;
+        transition: all 0.2s ease;
+      }
+
+      .download-btn:hover {
+        background: #dc2626;
+      }
+
+      /* Enhanced Floating Toolbar */
+      .floating-toolbar {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 50;
+      }
+
+      .floating-toolbar.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(-8px);
+      }
+
+      .floating-toolbar-section {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+      }
+
+      .floating-toolbar-divider {
+        width: 1px;
+        height: 24px;
+        background: #e2e8f0;
+        margin: 0 8px;
+      }
+
+      .floating-toolbar-grid {
+        display: grid;
+        grid-template-columns: repeat(8, 1fr);
+        gap: 4px;
+        align-items: center;
+      }
+
+      .emoji-picker-btn {
+        position: relative;
+      }
+
+      .emoji-picker {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        margin-bottom: 8px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        display: none;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 4px;
+        min-width: 200px;
+      }
+
+      .emoji-picker.show {
+        display: grid;
+      }
+
+      .emoji-option {
+        padding: 4px;
+        border-radius: 4px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.2s ease;
+      }
+
+      .emoji-option:hover {
+        background: #f1f5f9;
+      }
+
+      /* Collaboration Styles */
+      .collaborator-container {
+        position: relative;
+        display: inline-block;
+      }
+
+      .collaborator-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        transition: all 0.2s ease;
+      }
+
+      .collaborator-avatar.online {
+        border-color: #10b981;
+      }
+
+      .collaborator-avatar.away {
+        border-color: #f59e0b;
+      }
+
+      .collaborator-avatar.offline {
+        border-color: #6b7280;
+      }
+
+      .presence-indicator {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 2px solid white;
+      }
+
+      .presence-indicator.online {
+        background: #10b981;
+      }
+
+      .presence-indicator.away {
+        background: #f59e0b;
+      }
+
+      .presence-indicator.offline {
+        background: #6b7280;
+      }
+
+      .editing-indicator {
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #10b981;
+        color: white;
+        font-size: 0.625rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: 500;
+        white-space: nowrap;
+        opacity: 0;
+        animation: fadeInOut 3s infinite;
+      }
+
+      @keyframes fadeInOut {
+        0%,
+        100% {
+          opacity: 0;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+
+      .collaborator-more {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+
+      /* Share Dropdown Styles */
+      .share-container {
+        position: relative;
+      }
+
+      .share-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        background: #00b4d8;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .share-btn:hover {
+        background: #00809d;
+      }
+
+      .share-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 8px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        width: 320px;
+        padding: 16px;
+        display: none;
+        z-index: 50;
+      }
+
+      .share-dropdown.show {
+        display: block;
+      }
+
+      .share-section {
+        margin-bottom: 16px;
+      }
+
+      .share-section:last-child {
+        margin-bottom: 0;
+      }
+
+      .share-header {
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 12px;
+        font-size: 0.875rem;
+      }
+
+      .share-input-container {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+
+      .share-input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.875rem;
+      }
+
+      .permission-select {
+        padding: 8px 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        background: white;
+      }
+
+      .send-invite-btn {
+        background: #00b4d8;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        width: 100%;
+      }
+
+      .share-divider {
+        height: 1px;
+        background: #e2e8f0;
+        margin: 16px 0;
+      }
+
+      .link-share-options {
+        gap: 8px;
+      }
+
+      .link-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 8px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+      }
+
+      .link-option:hover {
+        background: #f8fafc;
+      }
+
+      .link-icon {
+        font-size: 1.25rem;
+        flex-shrink: 0;
+      }
+
+      .link-info {
+        flex: 1;
+      }
+
+      .link-title {
+        font-weight: 500;
+        color: #1e293b;
+        font-size: 0.875rem;
+      }
+
+      .link-desc {
+        color: #64748b;
+        font-size: 0.75rem;
+      }
+
+      .copy-link-btn {
+        background: #f1f5f9;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        padding: 4px 12px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .copy-link-btn:hover {
+        background: #e2e8f0;
+      }
+
+      /* Note Action Buttons */
+      .note-action-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background: white;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .note-action-btn:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+        color: #475569;
+      }
+
+      .note-action-btn.pinned {
+        background: #fef3c7;
+        border-color: #f59e0b;
+        color: #92400e;
+      }
+
+      .note-action-btn.favorited {
+        background: #fce7f3;
+        border-color: #ec4899;
+        color: #be185d;
+      }
+
+      /* Version History Dropdown */
+      .version-history-container {
+        position: relative;
+      }
+
+      .version-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 8px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        width: 280px;
+        padding: 12px;
+        display: none;
+        z-index: 50;
+      }
+
+      .version-dropdown.show {
+        display: block;
+      }
+
+      .version-header {
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 12px;
+        font-size: 0.875rem;
+      }
+
+      .version-list {
+        max-height: 200px;
+        overflow-y: auto;
+      }
+
+      .version-item {
+        padding: 8px;
+        border-radius: 6px;
+        margin-bottom: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .version-item:hover {
+        background: #f8fafc;
+      }
+
+      .version-item.current {
+        background: #dbeafe;
+        border: 1px solid #60a5fa;
+      }
+
+      .version-time {
+        font-size: 0.75rem;
+        color: #64748b;
+      }
+
+      .version-user {
+        font-weight: 500;
+        color: #1e293b;
+        font-size: 0.875rem;
+      }
+
+      .version-changes {
+        font-size: 0.75rem;
+        color: #64748b;
+      }
+
+      .view-all-versions {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 8px;
+      }
+
+      /* Status Indicator */
+      .offline-status {
+        display: flex;
+        align-items: center;
+      }
+
+      .status-indicator {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .status-indicator.online {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .status-indicator.offline {
+        background: #fef2f2;
+        color: #dc2626;
+      }
+
+      /* Theme Selector */
+      .theme-selector {
+        display: flex;
+        align-items: center;
+      }
+
+      .theme-options {
+        display: flex;
+        gap: 4px;
+      }
+
+      .theme-option {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        border: 2px solid transparent;
+        padding: 2px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .theme-option.active {
+        border-color: #64748b;
+      }
+
+      .theme-color {
+        width: 100%;
+        height: 100%;
+        border-radius: 2px;
+      }
+
+      /* Tags Section */
+      .tags-section {
+        display: flex;
+        align-items: center;
+      }
+
+      .tag-chip.editable {
+        position: relative;
+        cursor: pointer;
+      }
+
+      .tag-chip.editable:hover {
+        background: #e2e8f0;
+      }
+
+      .add-tag-btn {
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        border: 1px dashed #cbd5e1;
+        background: transparent;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .add-tag-btn:hover {
+        border-color: #00b4d8;
+        color: #00809d;
+        background: rgba(0, 180, 216, 0.05);
+      }
+
+      /* Comment Indicators */
+      .comment-indicator {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        background: #dbeafe;
+        border: 1px solid #60a5fa;
+        color: #1e40af;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        cursor: pointer;
+        margin-right: 8px;
+      }
+
+      .comment-count {
+        font-size: 0.75rem;
+      }
+
+      /* Folder Tree Styles */
+      .folder-tree {
+        margin-bottom: 16px;
+      }
+
+      .folder-item {
+        display: flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-size: 0.875rem;
+      }
+
+      .folder-item:hover {
+        background: #f8fafc;
+      }
+
+      .folder-item.expanded > .folder-toggle {
+        transform: rotate(90deg);
+      }
+
+      .folder-toggle {
+        width: 16px;
+        height: 16px;
+        color: #94a3b8;
+        transition: transform 0.2s ease;
+        margin-right: 4px;
+      }
+
+      .folder-icon {
+        width: 16px;
+        height: 16px;
+        color: #f59e0b;
+        margin-right: 8px;
+      }
+
+      .folder-children {
+        margin-left: 20px;
+        display: none;
+      }
+
+      .folder-item.expanded + .folder-children {
+        display: block;
+      }
+
+      /* Comments Sidebar Styles */
+      .comment-thread {
+        margin-bottom: 24px;
+      }
+
+      .comment-bubble {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 12px;
+        margin-bottom: 8px;
+      }
+
+      .comment-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+
+      .comment-author {
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 0.875rem;
+      }
+
+      .comment-time {
+        color: #64748b;
+        font-size: 0.75rem;
+      }
+
+      .comment-text {
+        color: #374151;
+        font-size: 0.875rem;
+        line-height: 1.5;
+        margin-bottom: 8px;
+      }
+
+      .comment-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .comment-action-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        color: #64748b;
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 4px 8px;
+        border-radius: 6px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .comment-action-btn:hover {
+        color: #475569;
+        background: #f1f5f9;
+      }
+
+      .comment-reply {
+        margin-left: 24px;
+        margin-top: 12px;
+        padding-left: 16px;
+        border-left: 2px solid #e2e8f0;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1024px) {
+        .left-sidebar {
+          position: fixed;
+          left: 0;
+          top: 0;
+          height: 100vh;
+          z-index: 40;
+          transform: translateX(-100%);
+          transition: transform 0.3s;
+        }
+
+        .left-sidebar.open {
+          transform: translateX(0);
+        }
+
+        .main-content {
+          margin-left: 0;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .note-title {
+          font-size: 24px;
+        }
+
+        .editor-area {
+          padding: 20px;
+        }
+
+        .floating-toolbar {
+          bottom: 16px;
+          padding: 8px;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-900">
+    <div class="flex h-screen">
+      <!-- Left Sidebar -->
+      <aside
+        class="left-sidebar w-80 bg-white border-r border-gray-200 flex flex-col"
+      >
+        <!-- Logo Section -->
+        <div class="px-6 py-5 border-b border-gray-100">
+          <div class="flex items-center space-x-3">
+            <div
+              class="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center"
+            >
+              <svg
+                class="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+            </div>
+            <span class="text-xl font-bold text-gray-900">Notes</span>
+          </div>
+        </div>
+
+        <!-- Search & Filter Section -->
+        <div class="px-6 py-4 border-b border-gray-100">
+          <div class="relative mb-4">
+            <input
+              type="text"
+              placeholder="Search notes..."
+              class="search-input w-full pl-10 pr-4 py-3 rounded-lg text-sm"
+            />
+            <svg
+              class="absolute left-3 top-3.5 w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+
+          <!-- Quick Filter Tags -->
+          <div class="flex flex-wrap gap-2">
+            <div class="tag-chip active">All</div>
+            <div class="tag-chip">Recent</div>
+            <div class="tag-chip">Favorites</div>
+            <div class="tag-chip">Shared</div>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+          <!-- Notebooks Section -->
+          <div class="notebook-section">
+            <div class="notebook-header">Notebooks</div>
+
+            <!-- Folder Tree Structure -->
+            <div class="folder-tree">
+              <!-- Personal Notes Folder -->
+              <div class="folder-item expanded" onclick="toggleFolder(this)">
+                <svg
+                  class="folder-toggle w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+                <svg
+                  class="folder-icon w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"
+                  />
+                </svg>
+                Personal Notes
+                <span class="count-badge ml-auto">24</span>
+              </div>
+              <div class="folder-children">
+                <a
+                  href="#"
+                  class="sidebar-item active flex items-center px-3 py-2 rounded-lg ml-6"
+                >
+                  <svg
+                    class="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Q3 Planning Document
+                </a>
+                <a
+                  href="#"
+                  class="sidebar-item flex items-center px-3 py-2 rounded-lg ml-6"
+                >
+                  <svg
+                    class="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Meeting Notes
+                </a>
+                <a
+                  href="#"
+                  class="sidebar-item flex items-center px-3 py-2 rounded-lg ml-6"
+                >
+                  <svg
+                    class="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Daily Journal
+                </a>
+              </div>
+
+              <!-- Work Projects Folder -->
+              <div class="folder-item" onclick="toggleFolder(this)">
+                <svg
+                  class="folder-toggle w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+                <svg
+                  class="folder-icon w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"
+                  />
+                </svg>
+                Work Projects
+                <span class="count-badge ml-auto">12</span>
+              </div>
+              <div class="folder-children">
+                <a
+                  href="#"
+                  class="sidebar-item flex items-center px-3 py-2 rounded-lg ml-6"
+                >
+                  <svg
+                    class="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Product Requirements
+                </a>
+                <a
+                  href="#"
+                  class="sidebar-item flex items-center px-3 py-2 rounded-lg ml-6"
+                >
+                  <svg
+                    class="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Sprint Planning
+                </a>
+              </div>
+
+              <!-- Learning & Research Folder -->
+              <div class="folder-item" onclick="toggleFolder(this)">
+                <svg
+                  class="folder-toggle w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+                <svg
+                  class="folder-icon w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-5l-2-2H5a2 2 0 00-2 2z"
+                  />
+                </svg>
+                Learning & Research
+                <span class="count-badge ml-auto">8</span>
+              </div>
+              <div class="folder-children">
+                <a
+                  href="#"
+                  class="sidebar-item flex items-center px-3 py-2 rounded-lg ml-6"
+                >
+                  <svg
+                    class="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Tech Articles
+                </a>
+                <a
+                  href="#"
+                  class="sidebar-item flex items-center px-3 py-2 rounded-lg ml-6"
+                >
+                  <svg
+                    class="w-4 h-4 mr-2"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  Study Notes
+                </a>
+              </div>
+            </div>
+
+            <!-- Legacy items for compatibility -->
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-3 py-2 rounded-lg"
+            >
+              <svg
+                class="w-5 h-5 mr-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                />
+              </svg>
+              Archive
+              <span class="count-badge">45</span>
+            </a>
+          </div>
+
+          <div class="sidebar-divider"></div>
+
+          <!-- Quick Access Section -->
+          <div class="notebook-section">
+            <div class="notebook-header">Quick Access</div>
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-3 py-2 rounded-lg"
+            >
+              <svg
+                class="w-5 h-5 mr-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
+              </svg>
+              Favorites
+              <span class="count-badge">6</span>
+            </a>
+
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-3 py-2 rounded-lg"
+            >
+              <svg
+                class="w-5 h-5 mr-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              Shared Notes
+              <span class="count-badge">3</span>
+            </a>
+
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-3 py-2 rounded-lg"
+            >
+              <svg
+                class="w-5 h-5 mr-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h4l3-3M11 7h4"
+                />
+              </svg>
+              Templates
+              <span class="count-badge">12</span>
+            </a>
+
+            <a
+              href="#"
+              class="sidebar-item flex items-center px-3 py-2 rounded-lg"
+            >
+              <svg
+                class="w-5 h-5 mr-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                />
+              </svg>
+              Tags
+            </a>
+          </div>
+
+          <div class="sidebar-divider"></div>
+
+          <!-- Recent Notes Section -->
+          <div class="notebook-section">
+            <div class="notebook-header">Recent Notes</div>
+            <div class="space-y-2">
+              <div class="note-card active">
+                <div class="flex items-start justify-between mb-2">
+                  <h4 class="font-medium text-sm text-gray-900 truncate">
+                    Product Roadmap Q3 2025
+                  </h4>
+                  <span class="text-xs text-gray-500 ml-2">2h</span>
+                </div>
+                <p class="text-xs text-gray-600 line-clamp-2">
+                  Key features and milestones for the upcoming quarter...
+                </p>
+                <div class="flex items-center mt-2 space-x-2">
+                  <span class="tag-chip text-xs">work</span>
+                  <span class="tag-chip text-xs">planning</span>
+                </div>
+              </div>
+
+              <div class="note-card">
+                <div class="flex items-start justify-between mb-2">
+                  <h4 class="font-medium text-sm text-gray-900 truncate">
+                    Meeting Notes - Design Review
+                  </h4>
+                  <span class="text-xs text-gray-500 ml-2">1d</span>
+                </div>
+                <p class="text-xs text-gray-600 line-clamp-2">
+                  Discussion points from the design system review meeting...
+                </p>
+                <div class="flex items-center mt-2 space-x-2">
+                  <span class="tag-chip text-xs">meetings</span>
+                  <span class="tag-chip text-xs">design</span>
+                </div>
+              </div>
+
+              <div class="note-card">
+                <div class="flex items-start justify-between mb-2">
+                  <h4 class="font-medium text-sm text-gray-900 truncate">
+                    JavaScript Patterns & Best Practices
+                  </h4>
+                  <span class="text-xs text-gray-500 ml-2">3d</span>
+                </div>
+                <p class="text-xs text-gray-600 line-clamp-2">
+                  Collection of useful JavaScript patterns and coding
+                  guidelines...
+                </p>
+                <div class="flex items-center mt-2 space-x-2">
+                  <span class="tag-chip text-xs">learning</span>
+                  <span class="tag-chip text-xs">javascript</span>
+                </div>
+              </div>
+
+              <div class="note-card">
+                <div class="flex items-start justify-between mb-2">
+                  <h4 class="font-medium text-sm text-gray-900 truncate">
+                    Weekend Project Ideas
+                  </h4>
+                  <span class="text-xs text-gray-500 ml-2">1w</span>
+                </div>
+                <p class="text-xs text-gray-600 line-clamp-2">
+                  Fun side projects to work on during free time...
+                </p>
+                <div class="flex items-center mt-2 space-x-2">
+                  <span class="tag-chip text-xs">personal</span>
+                  <span class="tag-chip text-xs">ideas</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Create Note Button -->
+        <div class="p-4 border-t border-gray-200">
+          <button
+            class="w-full gradient-bg text-white px-4 py-3 rounded-lg font-medium hover:opacity-90 transition-all duration-300 flex items-center justify-center space-x-2"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+            <span>New Note</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- Main Content Area -->
+      <main class="flex-1 flex flex-col bg-gray-50">
+        <!-- Top Toolbar -->
+        <header class="bg-white border-b border-gray-200 px-8 py-4">
+          <div class="flex items-center justify-between">
+            <!-- Left: Mobile Menu & Breadcrumb -->
+            <div class="flex items-center space-x-4">
+              <button class="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
+                <svg
+                  class="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
+                </svg>
+              </button>
+              <div class="flex items-center space-x-2 text-sm text-gray-600">
+                <span>Personal Notes</span>
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+                <span class="text-gray-900 font-medium"
+                  >Product Roadmap Q3 2025</span
+                >
+              </div>
+            </div>
+
+            <!-- Right: Actions & Collaboration -->
+            <div class="flex items-center space-x-4">
+              <!-- Collaboration Section -->
+              <div class="flex items-center space-x-3">
+                <!-- Real-time Collaborators -->
+                <div class="flex items-center space-x-2">
+                  <div class="collaborator-container">
+                    <img
+                      src="https://randomuser.me/api/portraits/women/44.jpg"
+                      class="collaborator-avatar online"
+                      title="Sarah Chen - Editing now"
+                    />
+                    <div class="presence-indicator online"></div>
+                    <div class="editing-indicator">Editing</div>
+                  </div>
+                  <div class="collaborator-container">
+                    <img
+                      src="https://randomuser.me/api/portraits/men/32.jpg"
+                      class="collaborator-avatar away"
+                      title="John Smith - 5 min ago"
+                    />
+                    <div class="presence-indicator away"></div>
+                  </div>
+                  <div class="collaborator-container">
+                    <img
+                      src="https://randomuser.me/api/portraits/men/45.jpg"
+                      class="collaborator-avatar offline"
+                      title="Mike Johnson - 2 hours ago"
+                    />
+                    <div class="presence-indicator offline"></div>
+                  </div>
+                  <div class="collaborator-more">
+                    <span class="text-xs text-gray-500">+2 more</span>
+                  </div>
+                </div>
+
+                <!-- Share Button with Dropdown -->
+                <div class="share-container">
+                  <button class="share-btn">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"
+                      />
+                    </svg>
+                    <span>Share</span>
+                    <svg
+                      class="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                  <div class="share-dropdown">
+                    <div class="share-section">
+                      <h4 class="share-header">Share with people</h4>
+                      <div class="share-input-container">
+                        <input
+                          type="email"
+                          placeholder="Enter email addresses..."
+                          class="share-input"
+                        />
+                        <select class="permission-select">
+                          <option value="view">Can view</option>
+                          <option value="comment">Can comment</option>
+                          <option value="edit" selected>Can edit</option>
+                        </select>
+                      </div>
+                      <button class="send-invite-btn">Send invite</button>
+                    </div>
+
+                    <div class="share-divider"></div>
+
+                    <div class="share-section">
+                      <h4 class="share-header">Share with link</h4>
+                      <div class="link-share-options">
+                        <div class="link-option">
+                          <div class="link-icon view">👁️</div>
+                          <div class="link-info">
+                            <span class="link-title">View only</span>
+                            <span class="link-desc"
+                              >Anyone with link can view</span
+                            >
+                          </div>
+                          <button class="copy-link-btn" data-access="view">
+                            Copy link
+                          </button>
+                        </div>
+                        <div class="link-option">
+                          <div class="link-icon comment">💬</div>
+                          <div class="link-info">
+                            <span class="link-title">Comment access</span>
+                            <span class="link-desc"
+                              >Anyone with link can comment</span
+                            >
+                          </div>
+                          <button class="copy-link-btn" data-access="comment">
+                            Copy link
+                          </button>
+                        </div>
+                        <div class="link-option">
+                          <div class="link-icon edit">✏️</div>
+                          <div class="link-info">
+                            <span class="link-title">Edit access</span>
+                            <span class="link-desc"
+                              >Anyone with link can edit</span
+                            >
+                          </div>
+                          <button class="copy-link-btn" data-access="edit">
+                            Copy link
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Note Actions -->
+              <div class="flex items-center space-x-2">
+                <!-- Pin/Favorite/Archive -->
+                <button class="note-action-btn pinned" title="Pin note">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                    />
+                  </svg>
+                </button>
+
+                <button
+                  class="note-action-btn favorited"
+                  title="Add to favorites"
+                >
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                    />
+                  </svg>
+                </button>
+
+                <button class="note-action-btn" title="Archive note">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+                    />
+                  </svg>
+                </button>
+
+                <!-- Version History -->
+                <div class="version-history-container">
+                  <button class="note-action-btn" title="Version history">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                  </button>
+                  <div class="version-dropdown">
+                    <div class="version-header">Version History</div>
+                    <div class="version-list">
+                      <div class="version-item current">
+                        <div class="version-time">Now</div>
+                        <div class="version-user">You</div>
+                        <div class="version-changes">Current version</div>
+                      </div>
+                      <div class="version-item">
+                        <div class="version-time">2 hours ago</div>
+                        <div class="version-user">Sarah Chen</div>
+                        <div class="version-changes">
+                          Updated timeline section
+                        </div>
+                      </div>
+                      <div class="version-item">
+                        <div class="version-time">Yesterday</div>
+                        <div class="version-user">You</div>
+                        <div class="version-changes">Added code blocks</div>
+                      </div>
+                      <div class="version-item">
+                        <div class="version-time">2 days ago</div>
+                        <div class="version-user">John Smith</div>
+                        <div class="version-changes">Initial creation</div>
+                      </div>
+                    </div>
+                    <button class="view-all-versions">View all versions</button>
+                  </div>
+                </div>
+
+                <!-- More Options -->
+                <button class="note-action-btn" title="More options">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Offline Status -->
+              <div class="offline-status">
+                <div
+                  class="status-indicator online"
+                  title="Online - All changes saved"
+                >
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Editor Toolbar -->
+        <div class="bg-white border-b border-gray-200 px-8 py-3">
+          <div class="flex items-center space-x-2">
+            <!-- Text Formatting -->
+            <button class="toolbar-btn">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 4h8a4 4 0 014 4 4 4 0 01-4 4H6z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 12h9a4 4 0 014 4 4 4 0 01-4 4H6z"
+                />
+              </svg>
+            </button>
+
+            <button class="toolbar-btn">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 114 0v2m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"
+                />
+              </svg>
+            </button>
+
+            <div class="w-px h-6 bg-gray-300 mx-2"></div>
+
+            <!-- Lists -->
+            <button class="toolbar-btn">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                />
+              </svg>
+            </button>
+
+            <button class="toolbar-btn">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                />
+              </svg>
+            </button>
+
+            <div class="w-px h-6 bg-gray-300 mx-2"></div>
+
+            <!-- Media -->
+            <button class="toolbar-btn">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </button>
+
+            <button class="toolbar-btn">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                />
+              </svg>
+            </button>
+
+            <div class="w-px h-6 bg-gray-300 mx-2"></div>
+
+            <!-- Blocks -->
+            <button class="toolbar-btn">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                />
+              </svg>
+            </button>
+
+            <button class="toolbar-btn">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Main Editor Area -->
+        <div class="flex-1 p-8 overflow-y-auto">
+          <div class="max-w-4xl mx-auto">
+            <!-- Note Title -->
+            <input
+              type="text"
+              placeholder="Note title..."
+              value="Product Roadmap Q3 2025"
+              class="note-title"
+            />
+
+            <!-- Enhanced Note Metadata with Theme Selector -->
+            <div class="flex items-center justify-between mb-8 text-sm">
+              <div class="flex items-center space-x-6 text-gray-600">
+                <div class="flex items-center space-x-2">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>Last edited 2 hours ago by Sarah Chen</span>
+                </div>
+                <span>•</span>
+                <div class="flex items-center space-x-2">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                  <span>745 words • 4 min read</span>
+                </div>
+                <span>•</span>
+                <div class="flex items-center space-x-2">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                    />
+                  </svg>
+                  <span>12 comments</span>
+                </div>
+              </div>
+
+              <div class="flex items-center space-x-4">
+                <!-- Color Theme Selector -->
+                <div class="theme-selector">
+                  <span class="text-xs text-gray-500 mr-2">Theme:</span>
+                  <div class="theme-options">
+                    <button
+                      class="theme-option active"
+                      data-theme="blue"
+                      title="Blue theme"
+                    >
+                      <div class="theme-color bg-blue-500"></div>
+                    </button>
+                    <button
+                      class="theme-option"
+                      data-theme="green"
+                      title="Green theme"
+                    >
+                      <div class="theme-color bg-green-500"></div>
+                    </button>
+                    <button
+                      class="theme-option"
+                      data-theme="purple"
+                      title="Purple theme"
+                    >
+                      <div class="theme-color bg-purple-500"></div>
+                    </button>
+                    <button
+                      class="theme-option"
+                      data-theme="orange"
+                      title="Orange theme"
+                    >
+                      <div class="theme-color bg-orange-500"></div>
+                    </button>
+                    <button
+                      class="theme-option"
+                      data-theme="red"
+                      title="Red theme"
+                    >
+                      <div class="theme-color bg-red-500"></div>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Tags with Edit -->
+                <div class="tags-section">
+                  <span class="text-xs text-gray-500 mr-2">Tags:</span>
+                  <div class="flex items-center space-x-2">
+                    <span class="tag-chip editable">work</span>
+                    <span class="tag-chip editable">planning</span>
+                    <span class="tag-chip editable">roadmap</span>
+                    <button class="add-tag-btn" title="Add tag">
+                      <svg
+                        class="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Block Editor Area -->
+            <div class="editor-area">
+              <!-- Heading Block -->
+              <div class="block-container group">
+                <div class="block-drag-handle">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 9l3 3 5-5m0 0H4m12 0V4"
+                    />
+                  </svg>
+                </div>
+                <div class="editor-block">
+                  <h1 class="text-3xl font-bold text-gray-900 mb-4">
+                    📋 Product Roadmap Q3 2025
+                  </h1>
+                </div>
+                <div class="block-actions">
+                  <button class="block-action-btn" title="Add comment">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Duplicate block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Delete block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Paragraph Block -->
+              <div class="block-container group">
+                <div class="block-drag-handle">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 8h16M4 16h16"
+                    />
+                  </svg>
+                </div>
+                <div class="editor-block">
+                  <p class="text-gray-700 mb-4">
+                    Our primary focus for Q3 will be on
+                    <strong>enhancing user experience</strong> and expanding our
+                    platform capabilities. The following objectives outline our
+                    strategic priorities for the upcoming quarter.
+                    <span class="inline-emoji">🚀</span> Let's build something
+                    amazing together!
+                  </p>
+                </div>
+                <div class="block-actions">
+                  <!-- Comment Indicator -->
+                  <div class="comment-indicator">
+                    <svg
+                      class="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                    <span class="comment-count">3</span>
+                  </div>
+
+                  <button class="block-action-btn" title="Add comment">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Duplicate block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Delete block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Bullet List Block -->
+              <div class="block-container group">
+                <div class="block-drag-handle">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 6h16M4 10h16M4 14h16M4 18h16"
+                    />
+                  </svg>
+                </div>
+                <div class="editor-block">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                    Key Features & Milestones
+                  </h3>
+                  <ul class="space-y-2 text-gray-700">
+                    <li class="flex items-start bullet-item">
+                      <span
+                        class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"
+                      ></span>
+                      Advanced analytics dashboard with real-time insights
+                    </li>
+                    <li class="flex items-start bullet-item">
+                      <span
+                        class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"
+                      ></span>
+                      Mobile app redesign and performance optimization
+                    </li>
+                    <li class="flex items-start bullet-item">
+                      <span
+                        class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"
+                      ></span>
+                      Integration with third-party collaboration tools
+                      <span class="inline-emoji">🔗</span>
+                    </li>
+                    <li class="flex items-start bullet-item">
+                      <span
+                        class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"
+                      ></span>
+                      Enhanced security features and compliance updates
+                    </li>
+                  </ul>
+                </div>
+                <div class="block-actions">
+                  <!-- Comment Indicator -->
+                  <div class="comment-indicator">
+                    <svg
+                      class="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                    <span class="comment-count">1</span>
+                  </div>
+
+                  <button class="block-action-btn" title="Add comment">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Duplicate block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Delete block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Checklist Block -->
+              <div class="block-container group">
+                <div class="block-drag-handle">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                    />
+                  </svg>
+                </div>
+                <div class="editor-block">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                    Action Items
+                  </h3>
+                  <ul class="space-y-3 text-gray-700">
+                    <li class="flex items-start checklist-item">
+                      <input
+                        type="checkbox"
+                        checked
+                        class="form-checkbox mt-1 mr-3 text-blue-600 rounded border-gray-300"
+                      />
+                      <span class="completed-item"
+                        >Complete wireframes for dashboard redesign</span
+                      >
+                    </li>
+                    <li class="flex items-start checklist-item">
+                      <input
+                        type="checkbox"
+                        class="form-checkbox mt-1 mr-3 text-blue-600 rounded border-gray-300"
+                      />
+                      <span>Review competitor analysis findings</span>
+                    </li>
+                    <li class="flex items-start checklist-item">
+                      <input
+                        type="checkbox"
+                        class="form-checkbox mt-1 mr-3 text-blue-600 rounded border-gray-300"
+                      />
+                      <span
+                        >Schedule user testing sessions
+                        <span class="inline-emoji">👥</span></span
+                      >
+                    </li>
+                    <li class="flex items-start checklist-item">
+                      <input
+                        type="checkbox"
+                        checked
+                        class="form-checkbox mt-1 mr-3 text-blue-600 rounded border-gray-300"
+                      />
+                      <span class="completed-item"
+                        >Set up development environment</span
+                      >
+                    </li>
+                  </ul>
+                </div>
+                <div class="block-actions">
+                  <button class="block-action-btn" title="Add comment">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Duplicate block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Delete block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Code Block -->
+              <div class="block-container group">
+                <div class="block-drag-handle">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                    />
+                  </svg>
+                </div>
+                <div class="editor-block">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                    CSS Implementation
+                  </h3>
+                  <div class="code-block">
+                    <div class="code-header">
+                      <span class="code-language">CSS</span>
+                      <button class="copy-code-btn" title="Copy code">
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                    <pre class="code-content"><code>.gradient-button {
+  background: linear-gradient(135deg, #00809d 0%, #00b4d8 100%);
+  border-radius: 8px;
+  padding: 12px 24px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.gradient-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 128, 157, 0.3);
+}</code></pre>
+                  </div>
+                </div>
+                <div class="block-actions">
+                  <button class="block-action-btn" title="Add comment">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Duplicate block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Delete block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Quote Block -->
+              <div class="block-container group">
+                <div class="block-drag-handle">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <div class="editor-block">
+                  <blockquote class="quote-block">
+                    <div class="quote-icon">
+                      <svg
+                        class="w-6 h-6"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"
+                        />
+                      </svg>
+                    </div>
+                    <p class="quote-text">
+                      "The best way to predict the future is to create it. Our
+                      roadmap isn't just a plan—it's a commitment to innovation
+                      and excellence."
+                    </p>
+                    <cite class="quote-author">— Peter Drucker</cite>
+                  </blockquote>
+                </div>
+                <div class="block-actions">
+                  <button class="block-action-btn" title="Add comment">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Duplicate block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Delete block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Toggle Block -->
+              <div class="block-container group">
+                <div class="block-drag-handle">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+                <div class="editor-block">
+                  <div class="toggle-block">
+                    <div
+                      class="toggle-header"
+                      onclick="this.parentElement.classList.toggle('open')"
+                    >
+                      <svg
+                        class="toggle-arrow"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M9 5l7 7-7 7"
+                        />
+                      </svg>
+                      <h3 class="text-lg font-semibold text-gray-900">
+                        Technical Implementation Details
+                      </h3>
+                    </div>
+                    <div class="toggle-content">
+                      <div class="space-y-3 text-gray-700">
+                        <p>
+                          <strong>Frontend Framework:</strong> React 18 with
+                          TypeScript
+                        </p>
+                        <p>
+                          <strong>State Management:</strong> Redux Toolkit with
+                          RTK Query
+                        </p>
+                        <p>
+                          <strong>Styling:</strong> Tailwind CSS with custom
+                          design tokens
+                        </p>
+                        <p>
+                          <strong>Testing:</strong> Jest, React Testing Library,
+                          Playwright
+                        </p>
+                        <p>
+                          <strong>Build Tool:</strong> Vite with optimized
+                          bundle splitting
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="block-actions">
+                  <button class="block-action-btn" title="Add comment">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Duplicate block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Delete block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Table Block -->
+              <div class="block-container group">
+                <div class="block-drag-handle">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <div class="editor-block">
+                  <h3 class="text-lg font-semibold text-gray-900 mb-3">
+                    Timeline Overview
+                  </h3>
+                  <div class="table-container">
+                    <table class="data-table">
+                      <thead>
+                        <tr>
+                          <th>Phase</th>
+                          <th>Duration</th>
+                          <th>Key Deliverables</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td><strong>Planning</strong></td>
+                          <td>2 weeks</td>
+                          <td>Requirements, wireframes, user stories</td>
+                          <td>
+                            <span class="status-badge completed"
+                              >✅ Completed</span
+                            >
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><strong>Design</strong></td>
+                          <td>3 weeks</td>
+                          <td>UI mockups, design system, prototypes</td>
+                          <td>
+                            <span class="status-badge in-progress"
+                              >🔄 In Progress</span
+                            >
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><strong>Development</strong></td>
+                          <td>6 weeks</td>
+                          <td>Frontend, backend, integrations</td>
+                          <td>
+                            <span class="status-badge pending">⏳ Pending</span>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td><strong>Testing</strong></td>
+                          <td>2 weeks</td>
+                          <td>QA testing, user acceptance testing</td>
+                          <td>
+                            <span class="status-badge pending">⏳ Pending</span>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+                <div class="block-actions">
+                  <button class="block-action-btn" title="Add comment">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Duplicate block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Delete block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Image Block -->
+              <div class="block-container group">
+                <div class="block-drag-handle">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <div class="editor-block">
+                  <div class="image-block">
+                    <div class="image-placeholder">
+                      <svg
+                        class="w-12 h-12 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                      <p class="text-gray-500 mt-2">
+                        Dashboard Mockup - Q3 Features
+                      </p>
+                      <button class="upload-btn">Click to upload image</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="block-actions">
+                  <button class="block-action-btn" title="Add comment">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Duplicate block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Delete block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Embedded Link Block -->
+              <div class="block-container group">
+                <div class="block-drag-handle">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                    />
+                  </svg>
+                </div>
+                <div class="editor-block">
+                  <div class="link-embed">
+                    <div class="link-preview">
+                      <div class="link-icon">
+                        <svg
+                          class="w-6 h-6"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                          />
+                        </svg>
+                      </div>
+                      <div class="link-content">
+                        <h4 class="link-title">
+                          Figma Design System Documentation
+                        </h4>
+                        <p class="link-description">
+                          Comprehensive guide to our design tokens, components,
+                          and usage guidelines
+                        </p>
+                        <span class="link-url">figma.com/design-system</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="block-actions">
+                  <button class="block-action-btn" title="Add comment">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Duplicate block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Delete block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- YouTube Embed Block -->
+              <div class="block-container group">
+                <div class="block-drag-handle">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l4.828 4.829a2 2 0 002.828 0 2 2 0 000-2.829L14.121 8.464a1 1 0 00-.707-.293H9z"
+                    />
+                  </svg>
+                </div>
+                <div class="editor-block">
+                  <div class="video-embed">
+                    <div class="video-thumbnail">
+                      <div class="play-button">
+                        <svg
+                          class="w-12 h-12"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                      <div class="video-info">
+                        <h4 class="video-title">
+                          Product Demo: Q3 Features Overview
+                        </h4>
+                        <p class="video-description">
+                          5-minute walkthrough of the new dashboard features
+                        </p>
+                        <span class="video-duration">5:23</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="block-actions">
+                  <button class="block-action-btn" title="Add comment">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Duplicate block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Delete block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- PDF Embed Block -->
+              <div class="block-container group">
+                <div class="block-drag-handle">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                </div>
+                <div class="editor-block">
+                  <div class="pdf-embed">
+                    <div class="pdf-preview">
+                      <div class="pdf-icon">
+                        <svg
+                          class="w-8 h-8"
+                          fill="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"
+                          />
+                        </svg>
+                      </div>
+                      <div class="pdf-info">
+                        <h4 class="pdf-title">
+                          Requirements Document - Q3 Features
+                        </h4>
+                        <p class="pdf-description">
+                          Detailed technical specifications and user stories
+                        </p>
+                        <div class="pdf-meta">
+                          <span>PDF • 12 pages • 2.3 MB</span>
+                          <button class="download-btn">Download</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="block-actions">
+                  <button class="block-action-btn" title="Add comment">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Duplicate block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                  <button class="block-action-btn" title="Delete block">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Block Placeholder -->
+              <div class="block-placeholder">
+                <div class="flex items-center justify-center space-x-2">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                  <span>Click to add a new block</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right Sidebar - Comments -->
+      <aside class="w-80 bg-white border-l border-gray-200 flex flex-col">
+        <!-- Comments Header -->
+        <div class="px-6 py-4 border-b border-gray-100">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold text-gray-900">Comments</h3>
+            <button class="text-gray-400 hover:text-gray-600">
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Comments List -->
+        <div class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+          <!-- Comment Thread 1 -->
+          <div class="comment-thread">
+            <div class="flex items-start space-x-3">
+              <div class="collaborator-container">
+                <img
+                  src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                  alt="Sarah Chen"
+                  class="collaborator-avatar"
+                />
+              </div>
+              <div class="flex-1">
+                <div class="comment-bubble">
+                  <div class="comment-header">
+                    <span class="comment-author">Sarah Chen</span>
+                    <span class="comment-time">2 hours ago</span>
+                  </div>
+                  <p class="comment-text">
+                    Great insights on the Q3 objectives! I think we should also
+                    consider adding a focus on mobile performance optimization.
+                  </p>
+                  <div class="comment-actions">
+                    <button class="comment-action-btn">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                        />
+                      </svg>
+                      2
+                    </button>
+                    <button class="comment-action-btn">Reply</button>
+                  </div>
+                </div>
+
+                <!-- Reply -->
+                <div class="comment-reply">
+                  <div class="flex items-start space-x-3">
+                    <div class="collaborator-container">
+                      <img
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                        alt="Mike Johnson"
+                        class="collaborator-avatar"
+                      />
+                    </div>
+                    <div class="flex-1">
+                      <div class="comment-bubble">
+                        <div class="comment-header">
+                          <span class="comment-author">Mike Johnson</span>
+                          <span class="comment-time">1 hour ago</span>
+                        </div>
+                        <p class="comment-text">
+                          Absolutely agree! Mobile performance is crucial for
+                          user retention.
+                        </p>
+                        <div class="comment-actions">
+                          <button class="comment-action-btn">
+                            <svg
+                              class="w-4 h-4"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                              />
+                            </svg>
+                            1
+                          </button>
+                          <button class="comment-action-btn">Reply</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comment Thread 2 -->
+          <div class="comment-thread">
+            <div class="flex items-start space-x-3">
+              <div class="collaborator-container">
+                <img
+                  src="https://images.unsplash.com/photo-1494790108755-2616b2ee25b1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                  alt="Emily Davis"
+                  class="collaborator-avatar"
+                />
+              </div>
+              <div class="flex-1">
+                <div class="comment-bubble">
+                  <div class="comment-header">
+                    <span class="comment-author">Emily Davis</span>
+                    <span class="comment-time">3 hours ago</span>
+                  </div>
+                  <p class="comment-text">
+                    The analytics dashboard feature sounds promising. Do we have
+                    any wireframes or mockups to review?
+                  </p>
+                  <div class="comment-actions">
+                    <button class="comment-action-btn">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                        />
+                      </svg>
+                      3
+                    </button>
+                    <button class="comment-action-btn">Reply</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comment Thread 3 -->
+          <div class="comment-thread">
+            <div class="flex items-start space-x-3">
+              <div class="collaborator-container">
+                <img
+                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                  alt="Mike Johnson"
+                  class="collaborator-avatar"
+                />
+              </div>
+              <div class="flex-1">
+                <div class="comment-bubble">
+                  <div class="comment-header">
+                    <span class="comment-author">Mike Johnson</span>
+                    <span class="comment-time">4 hours ago</span>
+                  </div>
+                  <p class="comment-text">
+                    Should we include third-party integrations like Slack and
+                    Teams in the collaboration tools section?
+                  </p>
+                  <div class="comment-actions">
+                    <button class="comment-action-btn">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                        />
+                      </svg>
+                      1
+                    </button>
+                    <button class="comment-action-btn">Reply</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comment Thread 4 -->
+          <div class="comment-thread">
+            <div class="flex items-start space-x-3">
+              <div class="collaborator-container">
+                <img
+                  src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                  alt="Jessica Wong"
+                  class="collaborator-avatar"
+                />
+              </div>
+              <div class="flex-1">
+                <div class="comment-bubble">
+                  <div class="comment-header">
+                    <span class="comment-author">Jessica Wong</span>
+                    <span class="comment-time">5 hours ago</span>
+                  </div>
+                  <p class="comment-text">
+                    Love the emoji usage! It makes the document more engaging.
+                    🎯
+                  </p>
+                  <div class="comment-actions">
+                    <button class="comment-action-btn">
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                        />
+                      </svg>
+                      5
+                    </button>
+                    <button class="comment-action-btn">Reply</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Comment Input -->
+        <div class="border-t border-gray-100 px-6 py-4">
+          <div class="flex items-start space-x-3">
+            <div class="collaborator-container">
+              <img
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80"
+                alt="You"
+                class="collaborator-avatar"
+              />
+            </div>
+            <div class="flex-1">
+              <textarea
+                placeholder="Add a comment..."
+                class="w-full p-3 border border-gray-200 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                rows="2"
+              ></textarea>
+              <div class="flex items-center justify-between mt-2">
+                <div class="flex items-center space-x-2">
+                  <button class="text-gray-400 hover:text-gray-600">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.586-6.586a2 2 0 00-2.828-2.828l-6.586 6.586a2 2 0 102.828 2.828L13 16.172"
+                      />
+                    </svg>
+                  </button>
+                  <button class="text-gray-400 hover:text-gray-600">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <button
+                  class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-700"
+                >
+                  Comment
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Enhanced Floating Toolbar (appears on block selection) -->
+    <div class="floating-toolbar">
+      <div class="floating-toolbar-grid">
+        <!-- Text Formatting Section -->
+        <button class="toolbar-btn" title="Bold (Ctrl+B)">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 4h8a4 4 0 014 4 4 4 0 01-4 4H6z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 12h9a4 4 0 014 4 4 4 0 01-4 4H6z"
+            />
+          </svg>
+        </button>
+
+        <button class="toolbar-btn" title="Italic (Ctrl+I)">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V4a2 2 0 114 0v2m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"
+            />
+          </svg>
+        </button>
+
+        <button class="toolbar-btn" title="Underline (Ctrl+U)">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V6a2 2 0 00-2-2h-2"
+            />
+          </svg>
+        </button>
+
+        <button class="toolbar-btn" title="Strikethrough">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M6 12h12m-6 4a4 4 0 004-4"
+            />
+          </svg>
+        </button>
+
+        <div class="floating-toolbar-divider"></div>
+
+        <!-- Heading Options -->
+        <button class="toolbar-btn" title="Heading 1">
+          <span class="font-bold text-lg">H1</span>
+        </button>
+
+        <button class="toolbar-btn" title="Heading 2">
+          <span class="font-bold text-base">H2</span>
+        </button>
+
+        <button class="toolbar-btn" title="Heading 3">
+          <span class="font-bold text-sm">H3</span>
+        </button>
+
+        <div class="floating-toolbar-divider"></div>
+
+        <!-- List & Structure -->
+        <button class="toolbar-btn" title="Bullet List">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 6h16M4 10h16M4 14h16M4 18h16"
+            />
+          </svg>
+        </button>
+
+        <button class="toolbar-btn" title="Numbered List">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+            />
+          </svg>
+        </button>
+
+        <button class="toolbar-btn" title="Checklist">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </button>
+
+        <button class="toolbar-btn" title="Quote Block">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        </button>
+
+        <div class="floating-toolbar-divider"></div>
+
+        <!-- Media & Embeds -->
+        <button class="toolbar-btn" title="Insert Image">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+        </button>
+
+        <button class="toolbar-btn" title="Insert Link">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+            />
+          </svg>
+        </button>
+
+        <button class="toolbar-btn" title="Code Block">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+            />
+          </svg>
+        </button>
+
+        <button class="toolbar-btn" title="Table">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+            />
+          </svg>
+        </button>
+
+        <div class="floating-toolbar-divider"></div>
+
+        <!-- Emoji & Special -->
+        <div class="emoji-picker-btn">
+          <button class="toolbar-btn" title="Add Emoji">
+            <span class="text-lg">😀</span>
+          </button>
+          <div class="emoji-picker">
+            <div class="emoji-option">😀</div>
+            <div class="emoji-option">😂</div>
+            <div class="emoji-option">😍</div>
+            <div class="emoji-option">🤔</div>
+            <div class="emoji-option">👍</div>
+            <div class="emoji-option">👎</div>
+            <div class="emoji-option">🎉</div>
+            <div class="emoji-option">🚀</div>
+            <div class="emoji-option">💡</div>
+            <div class="emoji-option">⚡</div>
+            <div class="emoji-option">🔥</div>
+            <div class="emoji-option">💯</div>
+            <div class="emoji-option">📝</div>
+            <div class="emoji-option">📋</div>
+            <div class="emoji-option">📊</div>
+            <div class="emoji-option">📈</div>
+            <div class="emoji-option">🎯</div>
+            <div class="emoji-option">⭐</div>
+            <div class="emoji-option">🔔</div>
+            <div class="emoji-option">⚠️</div>
+            <div class="emoji-option">✅</div>
+            <div class="emoji-option">❌</div>
+            <div class="emoji-option">🔗</div>
+            <div class="emoji-option">📎</div>
+          </div>
+        </div>
+
+        <button class="toolbar-btn" title="Add Comment">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            />
+          </svg>
+        </button>
+
+        <button class="toolbar-btn" title="More Options">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // Sidebar interactions
+      const sidebarItems = document.querySelectorAll(".sidebar-item");
+      sidebarItems.forEach((item) => {
+        item.addEventListener("click", (e) => {
+          e.preventDefault();
+          // Remove active class from all items
+          sidebarItems.forEach((i) => i.classList.remove("active"));
+          // Add active class to clicked item
+          item.classList.add("active");
+        });
+      });
+
+      // Note card interactions
+      const noteCards = document.querySelectorAll(".note-card");
+      noteCards.forEach((card) => {
+        card.addEventListener("click", () => {
+          // Remove active class from all cards
+          noteCards.forEach((c) => c.classList.remove("active"));
+          // Add active class to clicked card
+          card.classList.add("active");
+        });
+      });
+
+      // Tag chip interactions
+      const tagChips = document.querySelectorAll(".tag-chip");
+      tagChips.forEach((chip) => {
+        chip.addEventListener("click", () => {
+          chip.classList.toggle("active");
+        });
+      });
+
+      // Toolbar button interactions
+      const toolbarBtns = document.querySelectorAll(".toolbar-btn");
+      toolbarBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          btn.classList.toggle("active");
+        });
+      });
+
+      // Block container interactions
+      const blockContainers = document.querySelectorAll(".block-container");
+      blockContainers.forEach((container) => {
+        container.addEventListener("click", () => {
+          // Remove selected class from all containers
+          blockContainers.forEach((c) => c.classList.remove("selected"));
+          // Add selected class to clicked container
+          container.classList.add("selected");
+          // Show floating toolbar
+          document.querySelector(".floating-toolbar").classList.add("show");
+        });
+      });
+
+      // Click outside to deselect blocks
+      document.addEventListener("click", (e) => {
+        if (
+          !e.target.closest(".block-container") &&
+          !e.target.closest(".floating-toolbar")
+        ) {
+          blockContainers.forEach((c) => c.classList.remove("selected"));
+          document.querySelector(".floating-toolbar").classList.remove("show");
+        }
+      });
+
+      // Search functionality
+      const searchInput = document.querySelector(".search-input");
+      searchInput.addEventListener("input", (e) => {
+        const query = e.target.value.toLowerCase();
+        // Filter notes based on search query
+        console.log("Searching for:", query);
+      });
+
+      // Block placeholder interactions
+      const blockPlaceholders = document.querySelectorAll(".block-placeholder");
+      blockPlaceholders.forEach((placeholder) => {
+        placeholder.addEventListener("click", () => {
+          console.log("Add new block");
+          // Here you would implement block creation logic
+        });
+      });
+
+      // Toggle block functionality
+      const toggleHeaders = document.querySelectorAll(".toggle-header");
+      toggleHeaders.forEach((header) => {
+        header.addEventListener("click", () => {
+          const toggleBlock = header.parentElement;
+          toggleBlock.classList.toggle("open");
+        });
+      });
+
+      // Code copy functionality
+      const copyCodeBtns = document.querySelectorAll(".copy-code-btn");
+      copyCodeBtns.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const codeContent = btn
+            .closest(".code-block")
+            .querySelector(".code-content code");
+          if (codeContent) {
+            navigator.clipboard.writeText(codeContent.textContent).then(() => {
+              btn.innerHTML =
+                '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+              setTimeout(() => {
+                btn.innerHTML =
+                  '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>';
+              }, 2000);
+            });
+          }
+        });
+      });
+
+      // Checklist functionality
+      const checkboxes = document.querySelectorAll(
+        '.checklist-item input[type="checkbox"]'
+      );
+      checkboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", (e) => {
+          const textSpan = e.target.nextElementSibling;
+          if (e.target.checked) {
+            textSpan.classList.add("completed-item");
+          } else {
+            textSpan.classList.remove("completed-item");
+          }
+        });
+      });
+
+      // Emoji picker functionality
+      const emojiPickerBtn = document.querySelector(
+        ".emoji-picker-btn .toolbar-btn"
+      );
+      const emojiPicker = document.querySelector(".emoji-picker");
+      const emojiOptions = document.querySelectorAll(".emoji-option");
+
+      if (emojiPickerBtn && emojiPicker) {
+        emojiPickerBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          emojiPicker.classList.toggle("show");
+        });
+
+        emojiOptions.forEach((option) => {
+          option.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const selectedBlock = document.querySelector(
+              ".block-container.selected"
+            );
+            if (selectedBlock) {
+              // Insert emoji at cursor position or end of selected block
+              const emoji = option.textContent;
+              console.log("Insert emoji:", emoji);
+              // Here you would implement emoji insertion logic
+            }
+            emojiPicker.classList.remove("show");
+          });
+        });
+      }
+
+      // Block action button functionality
+      const blockActionBtns = document.querySelectorAll(".block-action-btn");
+      blockActionBtns.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const action = btn.getAttribute("title");
+          console.log("Block action:", action);
+          // Here you would implement specific block actions
+        });
+      });
+
+      // Drag and drop preparation (placeholder)
+      const dragHandles = document.querySelectorAll(".block-drag-handle");
+      dragHandles.forEach((handle) => {
+        handle.addEventListener("mousedown", (e) => {
+          console.log("Drag started");
+          // Here you would implement drag and drop logic
+        });
+      });
+
+      // Upload button functionality
+      const uploadBtns = document.querySelectorAll(".upload-btn");
+      uploadBtns.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          console.log("Upload image");
+          // Here you would implement file upload logic
+        });
+      });
+
+      // Download button functionality
+      const downloadBtns = document.querySelectorAll(".download-btn");
+      downloadBtns.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          console.log("Download PDF");
+          // Here you would implement file download logic
+        });
+      });
+
+      // Link and video embed interactions
+      const linkPreviews = document.querySelectorAll(".link-preview");
+      const videoThumbnails = document.querySelectorAll(".video-thumbnail");
+
+      linkPreviews.forEach((preview) => {
+        preview.addEventListener("click", () => {
+          console.log("Open link");
+          // Here you would implement link opening logic
+        });
+      });
+
+      videoThumbnails.forEach((thumbnail) => {
+        thumbnail.addEventListener("click", () => {
+          console.log("Play video");
+          // Here you would implement video playback logic
+        });
+      });
+
+      // Mobile menu toggle
+      const mobileMenuBtn = document.querySelector(".lg\\:hidden");
+      const sidebar = document.querySelector(".left-sidebar");
+
+      if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener("click", () => {
+          sidebar.classList.toggle("open");
+        });
+      }
+
+      // Auto-save indicator (placeholder)
+      let saveTimeout;
+      const noteTitle = document.querySelector(".note-title");
+      const editorArea = document.querySelector(".editor-area");
+
+      function showAutoSave() {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+          console.log("Auto-saved");
+          // Here you would implement auto-save logic
+        }, 2000);
+      }
+
+      noteTitle.addEventListener("input", showAutoSave);
+      editorArea.addEventListener("input", showAutoSave);
+
+      // Keyboard shortcuts
+      document.addEventListener("keydown", (e) => {
+        // Bold (Ctrl/Cmd + B)
+        if ((e.ctrlKey || e.metaKey) && e.key === "b") {
+          e.preventDefault();
+          console.log("Bold shortcut");
+        }
+
+        // Italic (Ctrl/Cmd + I)
+        if ((e.ctrlKey || e.metaKey) && e.key === "i") {
+          e.preventDefault();
+          console.log("Italic shortcut");
+        }
+
+        // Underline (Ctrl/Cmd + U)
+        if ((e.ctrlKey || e.metaKey) && e.key === "u") {
+          e.preventDefault();
+          console.log("Underline shortcut");
+        }
+
+        // Escape to deselect blocks
+        if (e.key === "Escape") {
+          blockContainers.forEach((c) => c.classList.remove("selected"));
+          document.querySelector(".floating-toolbar").classList.remove("show");
+          if (emojiPicker) {
+            emojiPicker.classList.remove("show");
+          }
+        }
+      });
+
+      // Initialize: Auto-select first note
+      if (noteCards.length > 0) {
+        noteCards[0].classList.add("active");
+      }
+
+      // Folder toggle functionality
+      function toggleFolder(element) {
+        const isExpanded = element.classList.contains("expanded");
+        const children = element.nextElementSibling;
+
+        if (isExpanded) {
+          element.classList.remove("expanded");
+          if (children && children.classList.contains("folder-children")) {
+            children.style.display = "none";
+          }
+        } else {
+          element.classList.add("expanded");
+          if (children && children.classList.contains("folder-children")) {
+            children.style.display = "block";
+          }
+        }
+      }
+
+      // Initialize folder states
+      document.querySelectorAll(".folder-item.expanded").forEach((folder) => {
+        const children = folder.nextElementSibling;
+        if (children && children.classList.contains("folder-children")) {
+          children.style.display = "block";
+        }
+      });
+    </script>
+  </body>
+</html>

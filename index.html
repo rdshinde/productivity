@@ -1,0 +1,1732 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Productivity - Your Ultimate Productivity Companion</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              primary: "#00809D",
+              "primary-light": "#00B4D8",
+              "primary-dark": "#005577",
+              "primary-vibrant": "#0099CC",
+              accent: "#FF6B35",
+              "accent-light": "#FF8C69",
+              "gray-50": "#FAFAFA",
+              "gray-900": "#0A0A0A",
+            },
+            fontFamily: {
+              apple: [
+                "Inter",
+                "-apple-system",
+                "BlinkMacSystemFont",
+                "San Francisco",
+                "Helvetica Neue",
+                "Arial",
+                "sans-serif",
+              ],
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      * {
+        scroll-behavior: smooth;
+      }
+
+      .gradient-bg {
+        background: linear-gradient(
+          135deg,
+          #00809d 0%,
+          #00b4d8 50%,
+          #0099cc 100%
+        );
+      }
+
+      .vibrant-gradient {
+        background: linear-gradient(
+          135deg,
+          #ff6b35 0%,
+          #ff8c69 50%,
+          #00b4d8 100%
+        );
+      }
+
+      .glass-effect {
+        backdrop-filter: blur(20px);
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .feature-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(0, 128, 157, 0.1);
+      }
+
+      .feature-card:hover {
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: 0 25px 50px -12px rgba(0, 128, 157, 0.25);
+        background: rgba(255, 255, 255, 1);
+        border: 1px solid rgba(0, 128, 157, 0.2);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .vibrant-card {
+        background: linear-gradient(
+          145deg,
+          rgba(0, 180, 216, 0.1),
+          rgba(255, 107, 53, 0.05)
+        );
+      }
+
+      .parallax {
+        transform: translateY(0);
+        transition: transform 0.1s ease-out;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out forwards;
+      }
+
+      .animate-delay-100 {
+        animation-delay: 0.1s;
+      }
+      .animate-delay-200 {
+        animation-delay: 0.2s;
+      }
+      .animate-delay-300 {
+        animation-delay: 0.3s;
+      }
+      .animate-delay-400 {
+        animation-delay: 0.4s;
+      }
+
+      .animate-float {
+        animation: float 6s ease-in-out infinite;
+      }
+
+      .animate-float-delayed {
+        animation: float 6s ease-in-out infinite;
+        animation-delay: -3s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-20px);
+        }
+      }
+
+      .animate-pulse-slow {
+        animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+
+      .animate-bounce-slow {
+        animation: bounce 3s infinite;
+      }
+
+      .hero-illustration {
+        filter: drop-shadow(0 25px 50px rgba(0, 128, 157, 0.2));
+      }
+
+      .floating-element {
+        animation: floatElement 8s ease-in-out infinite;
+      }
+
+      .floating-element:nth-child(2) {
+        animation-delay: -2s;
+      }
+
+      .floating-element:nth-child(3) {
+        animation-delay: -4s;
+      }
+
+      @keyframes floatElement {
+        0%,
+        100% {
+          transform: translateY(0px) rotate(0deg);
+        }
+        25% {
+          transform: translateY(-15px) rotate(2deg);
+        }
+        50% {
+          transform: translateY(-30px) rotate(0deg);
+        }
+        75% {
+          transform: translateY(-15px) rotate(-2deg);
+        }
+      }
+    </style>
+  </head>
+  <body class="font-apple bg-white text-gray-900 overflow-x-hidden">
+    <!-- Navigation -->
+    <nav
+      id="navbar"
+      class="fixed top-0 w-full z-50 backdrop-blur-xl border-b border-gray-200/20 shadow-sm transition-all duration-300"
+      style="background: rgba(255, 255, 255, 0.85)"
+    >
+      <div class="max-w-7xl mx-auto px-6 sm:px-8">
+        <div class="flex justify-between items-center h-20">
+          <div class="flex items-center">
+            <div
+              class="w-10 h-10 bg-gradient-to-br from-primary to-primary-vibrant rounded-xl flex items-center justify-center shadow-lg"
+              style="
+                background: linear-gradient(135deg, #00809d 0%, #0099cc 100%);
+              "
+            >
+              <svg
+                class="w-6 h-6 text-white"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                ></path>
+              </svg>
+            </div>
+            <span class="ml-4 text-2xl font-bold text-gray-900 tracking-tight"
+              >Productivity</span
+            >
+          </div>
+
+          <div class="hidden md:flex items-center space-x-10">
+            <a
+              href="#features"
+              class="text-gray-800 hover:text-primary transition-all duration-200 font-medium text-[15px] relative group"
+            >
+              Features
+              <span
+                class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"
+              ></span>
+            </a>
+            <a
+              href="#how-it-works"
+              class="text-gray-800 hover:text-primary transition-all duration-200 font-medium text-[15px] relative group"
+            >
+              How It Works
+              <span
+                class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"
+              ></span>
+            </a>
+            <a
+              href="#pricing"
+              class="text-gray-800 hover:text-primary transition-all duration-200 font-medium text-[15px] relative group"
+            >
+              Pricing
+              <span
+                class="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"
+              ></span>
+            </a>
+            <div class="flex items-center space-x-3">
+              <a
+                href="auth.html"
+                class="text-gray-800 hover:text-primary transition-all duration-200 font-medium text-[15px] px-4 py-2"
+              >
+                Sign In
+              </a>
+              <button
+                class="bg-primary text-white px-6 py-2.5 rounded-full hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:scale-[1.02] font-medium text-[15px] shadow-md gradient-bg"
+              >
+                Get Started
+              </button>
+            </div>
+          </div>
+
+          <button
+            id="mobile-menu-button"
+            class="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            <svg
+              id="hamburger-icon"
+              class="w-6 h-6 text-primary transition-transform duration-300"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              style="color: #00809d"
+            >
+              <path
+                d="M4 6h16M4 12h16M4 18h16"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </svg>
+            <svg
+              id="close-icon"
+              class="w-6 h-6 text-primary transition-transform duration-300 hidden"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              style="color: #00809d"
+            >
+              <path
+                d="M6 18L18 6M6 6l12 12"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div
+          id="mobile-menu"
+          class="md:hidden absolute top-full left-0 w-full backdrop-blur-xl border-t border-gray-200/30 shadow-lg transform -translate-y-full opacity-0 transition-all duration-300 ease-in-out pointer-events-none"
+          style="
+            background: linear-gradient(
+              135deg,
+              rgba(255, 255, 255, 0.98) 0%,
+              rgba(0, 128, 157, 0.05) 50%,
+              rgba(255, 255, 255, 0.95) 100%
+            );
+            border-top: 1px solid rgba(0, 128, 157, 0.2);
+          "
+        >
+          <div class="px-6 py-4 space-y-4">
+            <a
+              href="#features"
+              class="block text-gray-800 hover:text-primary transition-all duration-200 font-medium text-lg py-2 border-b border-gray-100"
+            >
+              Features
+            </a>
+            <a
+              href="#how-it-works"
+              class="block text-gray-800 hover:text-primary transition-all duration-200 font-medium text-lg py-2 border-b border-gray-100"
+            >
+              How It Works
+            </a>
+            <a
+              href="#pricing"
+              class="block text-gray-800 hover:text-primary transition-all duration-200 font-medium text-lg py-2 border-b border-gray-100"
+            >
+              Pricing
+            </a>
+            <div class="pt-4 space-y-3">
+              <a
+                href="auth.html"
+                class="block w-full text-center text-gray-800 hover:text-primary transition-all duration-200 font-medium text-lg py-3"
+              >
+                Sign In
+              </a>
+              <button
+                class="block w-full bg-primary text-white px-6 py-3 rounded-full hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 font-medium text-lg shadow-md gradient-bg"
+              >
+                Get Started
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section
+      class="relative min-h-screen flex items-center justify-center gradient-bg overflow-hidden pt-20 md:pt-0"
+    >
+      <div class="absolute inset-0 bg-black/10"></div>
+
+      <!-- Floating Background Elements -->
+      <div class="absolute inset-0 overflow-hidden">
+        <div
+          class="floating-element absolute top-20 left-10 w-16 h-16 bg-white/10 rounded-full blur-sm"
+        ></div>
+        <div
+          class="floating-element absolute top-40 right-20 w-24 h-24 bg-primary-light/20 rounded-full blur-sm"
+        ></div>
+        <div
+          class="floating-element absolute bottom-40 left-20 w-20 h-20 bg-accent/20 rounded-full blur-sm"
+        ></div>
+        <div
+          class="floating-element absolute bottom-20 right-10 w-12 h-12 bg-white/15 rounded-full blur-sm"
+        ></div>
+      </div>
+
+      <div
+        class="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center"
+      >
+        <!-- Left Content -->
+        <div class="text-center lg:text-left">
+          <h1
+            class="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 animate-fade-in-up"
+            style="font-weight: 800; letter-spacing: -0.02em"
+          >
+            The Future of
+            <span
+              class="block text-white/90 animate-pulse-slow"
+              style="
+                background: linear-gradient(135deg, #ffe6f7, #c4f0ff);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+              "
+              >Productivity</span
+            >
+          </h1>
+          <p
+            class="text-xl sm:text-2xl text-white/95 mb-8 max-w-2xl mx-auto lg:mx-0 animate-fade-in-up animate-delay-100 font-medium"
+          >
+            Meet Productivity—where AI meets intuition. Seamlessly blend task
+            management, intelligent notes, smart scheduling, and personalized
+            insights into one beautiful, unified workspace that adapts to your
+            unique workflow.
+          </p>
+          <div
+            class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-fade-in-up animate-delay-200"
+          >
+            <button
+              class="bg-white text-primary-vibrant px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-50 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 transform hover:scale-105 shadow-2xl group"
+            >
+              <span
+                class="group-hover:scale-110 transition-transform duration-200 inline-block"
+                >Start Free Trial</span
+              >
+            </button>
+            <button
+              class="border-2 border-white/80 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-primary-vibrant hover:border-white transition-all duration-300 backdrop-blur-sm group"
+            >
+              <span
+                class="group-hover:scale-110 transition-transform duration-200 inline-block"
+                >Watch Demo</span
+              >
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Illustration -->
+        <div class="relative animate-fade-in-up animate-delay-300">
+          <div class="hero-illustration animate-float">
+            <svg viewBox="0 0 500 400" class="w-full h-auto max-w-lg mx-auto">
+              <!-- Productivity Workspace Illustration -->
+
+              <!-- Background Circle -->
+              <circle
+                cx="250"
+                cy="200"
+                r="180"
+                fill="rgba(255, 255, 255, 0.1)"
+                class="animate-pulse-slow"
+              />
+
+              <!-- Desk -->
+              <rect
+                x="100"
+                y="280"
+                width="300"
+                height="15"
+                rx="7"
+                fill="#ffffff"
+                opacity="0.9"
+              />
+
+              <!-- Monitor -->
+              <rect
+                x="180"
+                y="180"
+                width="140"
+                height="100"
+                rx="8"
+                fill="#ffffff"
+                class="animate-float-delayed"
+              />
+              <rect
+                x="190"
+                y="190"
+                width="120"
+                height="80"
+                rx="4"
+                fill="#00809D"
+              />
+
+              <!-- Monitor Content - Task Board -->
+              <rect
+                x="200"
+                y="200"
+                width="25"
+                height="4"
+                rx="2"
+                fill="#00B4D8"
+              />
+              <rect
+                x="200"
+                y="208"
+                width="35"
+                height="4"
+                rx="2"
+                fill="#0099CC"
+              />
+              <rect
+                x="200"
+                y="216"
+                width="20"
+                height="4"
+                rx="2"
+                fill="#00B4D8"
+              />
+
+              <rect
+                x="240"
+                y="200"
+                width="30"
+                height="4"
+                rx="2"
+                fill="#FF6B35"
+              />
+              <rect
+                x="240"
+                y="208"
+                width="25"
+                height="4"
+                rx="2"
+                fill="#FF8C69"
+              />
+
+              <rect
+                x="280"
+                y="200"
+                width="28"
+                height="4"
+                rx="2"
+                fill="#00B4D8"
+              />
+              <rect
+                x="280"
+                y="208"
+                width="32"
+                height="4"
+                rx="2"
+                fill="#0099CC"
+              />
+
+              <!-- Laptop -->
+              <ellipse
+                cx="150"
+                cy="260"
+                rx="40"
+                ry="25"
+                fill="#ffffff"
+                class="animate-float"
+              />
+              <rect
+                x="125"
+                y="245"
+                width="50"
+                height="30"
+                rx="3"
+                fill="#005577"
+              />
+              <rect
+                x="130"
+                y="250"
+                width="40"
+                height="20"
+                rx="2"
+                fill="#00809D"
+              />
+
+              <!-- Coffee Cup -->
+              <ellipse
+                cx="350"
+                cy="260"
+                rx="15"
+                ry="20"
+                fill="#ffffff"
+                class="animate-bounce-slow"
+              />
+              <ellipse cx="350" cy="250" rx="12" ry="8" fill="#FF6B35" />
+              <path
+                d="M 365 255 Q 375 255 375 265"
+                stroke="#ffffff"
+                stroke-width="3"
+                fill="none"
+              />
+
+              <!-- Floating Notes/Documents -->
+              <g class="floating-element">
+                <rect
+                  x="80"
+                  y="120"
+                  width="60"
+                  height="80"
+                  rx="5"
+                  fill="#ffffff"
+                  opacity="0.9"
+                />
+                <rect
+                  x="90"
+                  y="135"
+                  width="40"
+                  height="3"
+                  rx="1.5"
+                  fill="#00809D"
+                />
+                <rect
+                  x="90"
+                  y="145"
+                  width="35"
+                  height="3"
+                  rx="1.5"
+                  fill="#00B4D8"
+                />
+                <rect
+                  x="90"
+                  y="155"
+                  width="30"
+                  height="3"
+                  rx="1.5"
+                  fill="#0099CC"
+                />
+                <circle cx="95" cy="170" r="3" fill="#FF6B35" />
+                <circle cx="105" cy="170" r="3" fill="#00B4D8" />
+                <circle cx="115" cy="170" r="3" fill="#0099CC" />
+              </g>
+
+              <!-- Floating Calendar -->
+              <g class="floating-element">
+                <rect
+                  x="360"
+                  y="100"
+                  width="70"
+                  height="70"
+                  rx="5"
+                  fill="#ffffff"
+                  opacity="0.9"
+                />
+                <rect
+                  x="365"
+                  y="105"
+                  width="60"
+                  height="15"
+                  rx="2"
+                  fill="#00809D"
+                />
+                <circle cx="375" cy="130" r="4" fill="#FF6B35" />
+                <circle cx="390" cy="130" r="4" fill="#00B4D8" />
+                <circle cx="405" cy="130" r="4" fill="#0099CC" />
+                <circle cx="375" cy="145" r="4" fill="#00B4D8" />
+                <circle cx="390" cy="145" r="4" fill="#0099CC" />
+                <circle cx="405" cy="145" r="4" fill="#FF6B35" />
+                <circle cx="375" cy="160" r="4" fill="#0099CC" />
+                <circle cx="390" cy="160" r="4" fill="#FF6B35" />
+              </g>
+
+              <!-- AI Brain/Network -->
+              <g class="animate-pulse-slow">
+                <circle
+                  cx="250"
+                  cy="80"
+                  r="25"
+                  fill="rgba(255, 255, 255, 0.2)"
+                />
+                <circle cx="250" cy="80" r="15" fill="#00B4D8" opacity="0.8" />
+                <circle cx="220" cy="100" r="8" fill="#0099CC" opacity="0.6" />
+                <circle cx="280" cy="100" r="8" fill="#FF6B35" opacity="0.6" />
+                <circle cx="230" cy="60" r="6" fill="#00B4D8" opacity="0.7" />
+                <circle cx="270" cy="60" r="6" fill="#0099CC" opacity="0.7" />
+
+                <!-- Connecting Lines -->
+                <line
+                  x1="250"
+                  y1="80"
+                  x2="220"
+                  y2="100"
+                  stroke="#ffffff"
+                  stroke-width="2"
+                  opacity="0.5"
+                />
+                <line
+                  x1="250"
+                  y1="80"
+                  x2="280"
+                  y2="100"
+                  stroke="#ffffff"
+                  stroke-width="2"
+                  opacity="0.5"
+                />
+                <line
+                  x1="250"
+                  y1="80"
+                  x2="230"
+                  y2="60"
+                  stroke="#ffffff"
+                  stroke-width="2"
+                  opacity="0.5"
+                />
+                <line
+                  x1="250"
+                  y1="80"
+                  x2="270"
+                  y2="60"
+                  stroke="#ffffff"
+                  stroke-width="2"
+                  opacity="0.5"
+                />
+              </g>
+
+              <!-- Productivity Arrows -->
+              <g class="animate-float">
+                <path
+                  d="M 50 180 Q 100 160 150 180"
+                  stroke="#ffffff"
+                  stroke-width="3"
+                  fill="none"
+                  opacity="0.6"
+                />
+                <polygon
+                  points="145,175 155,180 145,185"
+                  fill="#ffffff"
+                  opacity="0.6"
+                />
+              </g>
+
+              <g class="animate-float-delayed">
+                <path
+                  d="M 450 180 Q 400 160 350 180"
+                  stroke="#ffffff"
+                  stroke-width="3"
+                  fill="none"
+                  opacity="0.6"
+                />
+                <polygon
+                  points="355,175 345,180 355,185"
+                  fill="#ffffff"
+                  opacity="0.6"
+                />
+              </g>
+
+              <!-- Sparkles/Stars -->
+              <g class="animate-pulse-slow">
+                <polygon
+                  points="120,50 125,60 135,60 127,68 130,78 120,72 110,78 113,68 105,60 115,60"
+                  fill="#ffffff"
+                  opacity="0.7"
+                />
+                <polygon
+                  points="380,40 383,47 390,47 385,52 387,59 380,55 373,59 375,52 370,47 377,47"
+                  fill="#ffffff"
+                  opacity="0.6"
+                />
+                <polygon
+                  points="420,180 423,187 430,187 425,192 427,199 420,195 413,199 415,192 410,187 417,187"
+                  fill="#ffffff"
+                  opacity="0.5"
+                />
+                <polygon
+                  points="60,220 63,227 70,227 65,232 67,239 60,235 53,239 55,232 50,227 57,227"
+                  fill="#ffffff"
+                  opacity="0.6"
+                />
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce"
+      >
+        <svg
+          class="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 14l-7 7m0 0l-7-7m7 7V3"
+          ></path>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8">
+        <div class="text-center mb-16">
+          <h2
+            class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4"
+            style="font-weight: 800; letter-spacing: -0.02em"
+          >
+            Everything You Need
+          </h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto font-medium">
+            Powerful features designed to supercharge your productivity and
+            streamline your workflow.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div
+            class="feature-card vibrant-card p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300"
+          >
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-primary to-primary-vibrant rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+              style="
+                background: linear-gradient(135deg, #00809d 0%, #0099cc 100%);
+              "
+            >
+              <svg
+                class="w-8 h-8 text-white"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                ></path>
+              </svg>
+            </div>
+            <h3
+              class="text-2xl font-bold mb-4 text-gray-900"
+              style="font-weight: 700"
+            >
+              Smart Task Management
+            </h3>
+            <p class="text-gray-600 mb-4 font-medium">
+              Notion-inspired task boards with AI-powered prioritization,
+              natural language processing, and intelligent deadline suggestions
+              that learn from your work patterns.
+            </p>
+            <ul class="text-sm text-gray-500 space-y-1 font-medium">
+              <li>• Drag & drop Kanban boards</li>
+              <li>• AI priority recommendations</li>
+              <li>• Smart deadline tracking</li>
+            </ul>
+          </div>
+
+          <!-- Notes -->
+          <div
+            class="feature-card vibrant-card p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300"
+          >
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-primary-light to-primary rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+              style="
+                background: linear-gradient(135deg, #00b4d8 0%, #00809d 100%);
+              "
+            >
+              <svg
+                class="w-8 h-8 text-white"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                ></path>
+              </svg>
+            </div>
+            <h3
+              class="text-2xl font-bold mb-4 text-gray-900"
+              style="font-weight: 700"
+            >
+              Intelligent Notes
+            </h3>
+            <p class="text-gray-600 mb-4 font-medium">
+              Rich text editing with real-time collaboration, automatic
+              organization, AI-powered summaries, and seamless integration with
+              your tasks and calendar.
+            </p>
+            <ul class="text-sm text-gray-500 space-y-1 font-medium">
+              <li>• Real-time collaboration</li>
+              <li>• AI content suggestions</li>
+              <li>• Auto-tagging & search</li>
+            </ul>
+          </div>
+
+          <!-- Calendar -->
+          <div
+            class="feature-card vibrant-card p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300"
+          >
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-primary-vibrant to-primary-dark rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+              style="
+                background: linear-gradient(135deg, #0099cc 0%, #005577 100%);
+              "
+            >
+              <svg
+                class="w-8 h-8 text-white"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"
+                ></path>
+              </svg>
+            </div>
+            <h3
+              class="text-2xl font-bold mb-4 text-gray-900"
+              style="font-weight: 700"
+            >
+              AI Calendar Optimization
+            </h3>
+            <p class="text-gray-600 mb-4 font-medium">
+              Google Calendar integration with intelligent scheduling, automatic
+              conflict resolution, focus time blocking, and meeting efficiency
+              analytics.
+            </p>
+            <ul class="text-sm text-gray-500 space-y-1 font-medium">
+              <li>• Smart meeting scheduling</li>
+              <li>• Focus time protection</li>
+              <li>• Travel time calculations</li>
+            </ul>
+          </div>
+
+          <!-- LLM Search -->
+          <div
+            class="feature-card vibrant-card p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300"
+          >
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-primary to-primary-light rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+              style="
+                background: linear-gradient(135deg, #00809d 0%, #00b4d8 100%);
+              "
+            >
+              <svg
+                class="w-8 h-8 text-white"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"
+                ></path>
+              </svg>
+            </div>
+            <h3
+              class="text-2xl font-bold mb-4 text-gray-900"
+              style="font-weight: 700"
+            >
+              Universal AI Search
+            </h3>
+            <p class="text-gray-600 mb-4 font-medium">
+              Ask questions in natural language and instantly find information
+              across all your notes, tasks, files, and connected apps. Like
+              having a personal assistant who knows everything.
+            </p>
+            <ul class="text-sm text-gray-500 space-y-1 font-medium">
+              <li>• Natural language queries</li>
+              <li>• Cross-platform indexing</li>
+              <li>• Contextual suggestions</li>
+            </ul>
+          </div>
+
+          <!-- Health & Fitness -->
+          <div
+            class="feature-card vibrant-card p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300"
+          >
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-primary-dark to-primary-vibrant rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+              style="
+                background: linear-gradient(135deg, #005577 0%, #0099cc 100%);
+              "
+            >
+              <svg
+                class="w-8 h-8 text-white"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
+                ></path>
+              </svg>
+            </div>
+            <h3
+              class="text-2xl font-bold mb-4 text-gray-900"
+              style="font-weight: 700"
+            >
+              Wellness Integration
+            </h3>
+            <p class="text-gray-600 mb-4 font-medium">
+              Holistic health tracking with personalized nutrition plans,
+              adaptive workout routines, mindfulness reminders, and wellness
+              analytics integrated into your daily workflow.
+            </p>
+            <ul class="text-sm text-gray-500 space-y-1 font-medium">
+              <li>• Personalized meal planning</li>
+              <li>• Adaptive fitness routines</li>
+              <li>• Wellness analytics</li>
+            </ul>
+          </div>
+
+          <!-- Media & Widgets -->
+          <div
+            class="feature-card vibrant-card p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300"
+          >
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-primary-light to-primary rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+              style="
+                background: linear-gradient(135deg, #00b4d8 0%, #00809d 100%);
+              "
+            >
+              <svg
+                class="w-8 h-8 text-white"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"
+                ></path>
+              </svg>
+            </div>
+            <h3
+              class="text-2xl font-bold mb-4 text-gray-900"
+              style="font-weight: 700"
+            >
+              Dynamic Dashboard
+            </h3>
+            <p class="text-gray-600 mb-4 font-medium">
+              Personalized command center with intelligent widgets for news,
+              weather, music, stocks, and more. Automatically curates content
+              based on your interests and schedule.
+            </p>
+            <ul class="text-sm text-gray-500 space-y-1 font-medium">
+              <li>• Intelligent content curation</li>
+              <li>• Customizable layouts</li>
+              <li>• Third-party integrations</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-20 bg-white">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+            Three Steps to Transformation
+          </h2>
+          <p class="text-xl text-gray-600">
+            From chaos to clarity in under 5 minutes—our AI handles the heavy
+            lifting
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+          <div class="text-center">
+            <div
+              class="w-20 h-20 bg-gradient-to-br from-primary to-primary-vibrant rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg gradient-bg"
+            >
+              <span class="text-2xl font-bold text-white">1</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Connect & Authenticate</h3>
+            <p class="text-gray-600">
+              Seamless Google OAuth integration automatically syncs your
+              calendar, drive, and existing productivity tools. One click,
+              infinite possibilities.
+            </p>
+          </div>
+
+          <div class="text-center">
+            <div
+              class="w-20 h-20 bg-gradient-to-br from-primary to-primary-vibrant rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg gradient-bg"
+            >
+              <span class="text-2xl font-bold text-white">2</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">AI Learns Your Style</h3>
+            <p class="text-gray-600">
+              Our intelligent system analyzes your work patterns, communication
+              style, and preferences to create a truly personalized productivity
+              environment.
+            </p>
+          </div>
+
+          <div class="text-center">
+            <div
+              class="w-20 h-20 bg-gradient-to-br from-primary to-primary-vibrant rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg gradient-bg"
+            >
+              <span class="text-2xl font-bold text-white">3</span>
+            </div>
+            <h3 class="text-2xl font-bold mb-4">Experience the Magic</h3>
+            <p class="text-gray-600">
+              Watch as Productivity transforms into your perfect
+              workspace—organized, intelligent, and uniquely yours. Productivity
+              has never felt this natural.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="py-20 bg-gray-50">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8">
+        <div class="text-center mb-16">
+          <h2
+            class="text-4xl sm:text-5xl font-bold text-gray-900 mb-4"
+            style="font-weight: 800; letter-spacing: -0.02em"
+          >
+            Simple, Transparent Pricing
+          </h2>
+          <p class="text-xl text-gray-600 max-w-3xl mx-auto font-medium">
+            Start free and upgrade when you're ready to unlock the full power of
+            AI-driven productivity.
+          </p>
+        </div>
+
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto mt-auto"
+        >
+          <!-- Free Plan -->
+          <div
+            class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300 relative"
+          >
+            <div class="text-center mb-8">
+              <h3 class="text-2xl font-bold text-gray-900 mb-2">Free Plan</h3>
+              <div class="flex items-center justify-center mb-4">
+                <span class="text-5xl font-bold text-gray-900">$0</span>
+                <span class="text-gray-600 ml-2 text-lg">/month</span>
+              </div>
+              <p class="text-gray-600">
+                Perfect for getting started with basic productivity features
+              </p>
+            </div>
+
+            <ul class="space-y-4 mb-8">
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700">Basic task management</span>
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700">Simple note-taking</span>
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700">Calendar integration</span>
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700">Basic dashboard widgets</span>
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700">Up to 3 projects</span>
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-400 line-through"
+                  >AI-powered features</span
+                >
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-gray-400 mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-400 line-through"
+                  >Universal AI Search</span
+                >
+              </li>
+            </ul>
+            <button
+              class="w-full bg-white border-2 border-primary text-primary px-6 py-3 rounded-full font-semibold text-lg hover:bg-primary hover:text-white transition-all duration-300 transform hover:scale-[1.02] shadow-md mt-auto"
+              style="
+                background: linear-gradient(135deg, #00809d 0%, #0099cc 100%);
+                color: white;
+              "
+            >
+              Get Started Free
+            </button>
+          </div>
+
+          <!-- Pro Plan -->
+          <div
+            class="bg-white p-8 rounded-2xl shadow-lg border-2 border-primary hover:shadow-xl transition-all duration-300 relative"
+          >
+            <div class="absolute -top-4 left-1/2 transform -translate-x-1/2">
+              <span
+                class="bg-primary text-white px-4 py-1 rounded-full text-sm font-semibold"
+              >
+                Most Popular
+              </span>
+            </div>
+
+            <div class="text-center mb-8">
+              <h3 class="text-2xl font-bold text-gray-900 mb-2">Pro Plan</h3>
+              <div class="flex items-center justify-center mb-4">
+                <span class="text-5xl font-bold text-gray-900">$12</span>
+                <span class="text-gray-600 ml-2 text-lg">/month</span>
+              </div>
+              <p class="text-gray-600">
+                Full access to all productivity features and AI capabilities
+              </p>
+            </div>
+
+            <ul class="space-y-4 mb-8">
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700"
+                  ><strong>Everything in Free</strong></span
+                >
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700"
+                  >AI-powered task prioritization</span
+                >
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700">Universal AI Search</span>
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700"
+                  >Intelligent scheduling & optimization</span
+                >
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700"
+                  >AI content suggestions & summaries</span
+                >
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700"
+                  >Wellness integration & analytics</span
+                >
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700">Advanced dashboard & widgets</span>
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700"
+                  >Unlimited projects & collaboration</span
+                >
+              </li>
+              <li class="flex items-start">
+                <svg
+                  class="w-5 h-5 text-primary mt-0.5 mr-3 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-gray-700">Priority support</span>
+              </li>
+            </ul>
+
+            <button
+              class="w-full px-6 py-3 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-[1.02] shadow-md"
+              style="
+                background: linear-gradient(135deg, #00809d 0%, #0099cc 100%);
+                color: white;
+              "
+            >
+              Start Pro Trial
+            </button>
+            <p class="text-center text-sm text-gray-500 mt-3">
+              14-day free trial, then $12/month
+            </p>
+          </div>
+        </div>
+
+        <div class="text-center mt-12">
+          <p class="text-gray-600 mb-4">
+            Need a custom solution for your team?
+          </p>
+          <button
+            class="text-primary hover:text-primary-dark font-semibold transition-colors"
+          >
+            Contact us for Enterprise pricing →
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 gradient-bg">
+      <div class="max-w-4xl mx-auto text-center px-6 sm:px-8">
+        <h2 class="text-4xl sm:text-5xl font-bold text-white mb-6">
+          Ready to Transform Your Productivity?
+        </h2>
+        <p class="text-xl text-white/90 mb-8">
+          Join thousands of users who've revolutionized their workflow with
+          Productivity
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            class="bg-white text-primary px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-50 transition-all duration-300 transform hover:scale-105 shadow-2xl"
+          >
+            Get Started Free
+          </button>
+          <button
+            class="border-2 border-white text-primary px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-primary transition-all duration-300"
+          >
+            Schedule Demo
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+      <div class="max-w-7xl mx-auto px-6 sm:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <div class="flex items-center mb-4">
+              <div
+                class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center"
+              >
+                <svg
+                  class="w-5 h-5 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+                  ></path>
+                </svg>
+              </div>
+              <span class="ml-3 text-xl font-semibold">Productivity</span>
+            </div>
+            <p class="text-gray-400">
+              Your ultimate productivity companion, designed to help you achieve
+              more with less effort.
+            </p>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-4">Product</h4>
+            <ul class="space-y-2 text-gray-400">
+              <li>
+                <a href="#" class="hover:text-primary transition-colors"
+                  >Features</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-primary transition-colors"
+                  >Pricing</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-primary transition-colors">API</a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-4">Company</h4>
+            <ul class="space-y-2 text-gray-400">
+              <li>
+                <a href="#" class="hover:text-primary transition-colors"
+                  >About</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-primary transition-colors"
+                  >Blog</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-primary transition-colors"
+                  >Careers</a
+                >
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="font-semibold mb-4">Support</h4>
+            <ul class="space-y-2 text-gray-400">
+              <li>
+                <a href="#" class="hover:text-primary transition-colors"
+                  >Help Center</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-primary transition-colors"
+                  >Contact</a
+                >
+              </li>
+              <li>
+                <a href="#" class="hover:text-primary transition-colors"
+                  >Privacy</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div
+          class="border-t border-gray-800 mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center"
+        >
+          <p class="text-gray-400">© 2025 Productivity. All rights reserved.</p>
+          <div class="flex space-x-6 mt-4 sm:mt-0">
+            <a
+              href="#"
+              class="text-gray-400 hover:text-primary transition-colors"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M20 10c0-5.523-4.477-10-10-10S0 4.477 0 10c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V10h2.54V7.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V10h2.773l-.443 2.89h-2.33v6.988C16.343 19.128 20 14.991 20 10z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-primary transition-colors"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  d="M6.29 18.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0020 3.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.073 4.073 0 01.8 7.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 010 16.407a11.616 11.616 0 006.29 1.84"
+                ></path>
+              </svg>
+            </a>
+            <a
+              href="#"
+              class="text-gray-400 hover:text-primary transition-colors"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fill-rule="evenodd"
+                  d="M16.338 16.338H13.67V12.16c0-.995-.017-2.277-1.387-2.277-1.39 0-1.601 1.086-1.601 2.207v4.248H8.014v-8.59h2.559v1.174h.037c.356-.675 1.227-1.387 2.526-1.387 2.703 0 3.203 1.778 3.203 4.092v4.711zM5.005 6.575a1.548 1.548 0 11-.003-3.096 1.548 1.548 0 01.003 3.096zm-1.337 9.763H6.34v-8.59H3.667v8.59zM17.668 1H2.328C1.595 1 1 1.581 1 2.298v15.403C1 18.418 1.595 19 2.328 19h15.34c.734 0 1.332-.582 1.332-1.299V2.298C19 1.581 18.402 1 17.668 1z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Navbar scroll effect
+      function updateNavbar() {
+        const navbar = document.getElementById("navbar");
+        const scrolled = window.pageYOffset;
+
+        if (scrolled > 100) {
+          // More opaque background when scrolled for better contrast
+          navbar.style.background = "rgba(255, 255, 255, 0.95)";
+          navbar.style.borderBottom = "1px solid rgba(0, 128, 157, 0.15)";
+          navbar.style.boxShadow = "0 4px 24px rgba(0, 128, 157, 0.1)";
+        } else {
+          // More transparent when at top
+          navbar.style.background = "rgba(255, 255, 255, 0.85)";
+          navbar.style.borderBottom = "1px solid rgba(200, 200, 200, 0.2)";
+          navbar.style.boxShadow = "0 2px 12px rgba(0, 0, 0, 0.05)";
+        }
+      }
+
+      // Update navbar on scroll
+      window.addEventListener("scroll", updateNavbar);
+      // Initialize navbar
+      updateNavbar();
+
+      // Smooth scroll behavior
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute("href"));
+          if (target) {
+            target.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        });
+      });
+
+      // Parallax effect on scroll
+      window.addEventListener("scroll", () => {
+        const scrolled = window.pageYOffset;
+        const parallaxElements = document.querySelectorAll(".parallax");
+
+        parallaxElements.forEach((element) => {
+          const speed = 0.5;
+          element.style.transform = `translateY(${scrolled * speed}px)`;
+        });
+      });
+
+      // Intersection Observer for animations
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.style.opacity = "1";
+            entry.target.style.transform = "translateY(0)";
+          }
+        });
+      }, observerOptions);
+
+      // Observe all feature cards
+      document.querySelectorAll(".feature-card").forEach((card) => {
+        card.style.opacity = "0";
+        card.style.transform = "translateY(30px)";
+        card.style.transition = "all 0.6s ease-out";
+        observer.observe(card);
+      });
+
+      // Mobile menu toggle functionality
+      const mobileMenuButton = document.getElementById("mobile-menu-button");
+      const mobileMenu = document.getElementById("mobile-menu");
+      const hamburgerIcon = document.getElementById("hamburger-icon");
+      const closeIcon = document.getElementById("close-icon");
+      let isMenuOpen = false;
+
+      function toggleMobileMenu() {
+        isMenuOpen = !isMenuOpen;
+
+        if (isMenuOpen) {
+          // Show menu
+          mobileMenu.style.transform = "translateY(0)";
+          mobileMenu.style.opacity = "1";
+          mobileMenu.style.pointerEvents = "auto";
+          hamburgerIcon.classList.add("hidden");
+          closeIcon.classList.remove("hidden");
+
+          // Animate menu items
+          const menuItems = mobileMenu.querySelectorAll("a, button");
+          menuItems.forEach((item, index) => {
+            setTimeout(() => {
+              item.style.transform = "translateX(0)";
+              item.style.opacity = "1";
+            }, index * 100);
+          });
+        } else {
+          // Hide menu
+          mobileMenu.style.transform = "translateY(-100%)";
+          mobileMenu.style.opacity = "0";
+          mobileMenu.style.pointerEvents = "none";
+          hamburgerIcon.classList.remove("hidden");
+          closeIcon.classList.add("hidden");
+
+          // Reset menu items
+          const menuItems = mobileMenu.querySelectorAll("a, button");
+          menuItems.forEach((item) => {
+            item.style.transform = "translateX(-20px)";
+            item.style.opacity = "0";
+          });
+        }
+      }
+
+      // Initialize menu items position
+      const menuItems = mobileMenu.querySelectorAll("a, button");
+      menuItems.forEach((item) => {
+        item.style.transform = "translateX(-20px)";
+        item.style.opacity = "0";
+        item.style.transition = "all 0.3s ease-out";
+      });
+
+      mobileMenuButton.addEventListener("click", toggleMobileMenu);
+
+      // Close menu when clicking on links
+      mobileMenu.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+          if (isMenuOpen) {
+            toggleMobileMenu();
+          }
+        });
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener("click", (e) => {
+        if (
+          isMenuOpen &&
+          !mobileMenuButton.contains(e.target) &&
+          !mobileMenu.contains(e.target)
+        ) {
+          toggleMobileMenu();
+        }
+      });
+
+      // Close menu on escape key
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && isMenuOpen) {
+          toggleMobileMenu();
+        }
+      });
+    </script>
+  </body>
+</html>
