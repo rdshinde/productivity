@@ -1,0 +1,42 @@
+[
+  {
+    "id": "1",
+    "title": "Team Standup",
+    "date": "2025-07-01",
+    "time": "9:00 AM",
+    "type": "meeting",
+    "priority": "high"
+  },
+  {
+    "id": "2",
+    "title": "Gym Session",
+    "date": "2025-07-02",
+    "time": "6:00 AM",
+    "type": "personal",
+    "priority": "medium"
+  },
+  {
+    "id": "3",
+    "title": "Client Call",
+    "date": "2025-07-02",
+    "time": "2:00 PM",
+    "type": "meeting",
+    "priority": "high"
+  },
+  {
+    "id": "4",
+    "title": "Project Due",
+    "date": "2025-07-04",
+    "time": "11:59 PM",
+    "type": "deadline",
+    "priority": "high"
+  },
+  {
+    "id": "5",
+    "title": "Weekend Trip",
+    "date": "2025-07-05",
+    "time": "All Day",
+    "type": "personal",
+    "priority": "low"
+  }
+]

@@ -1,0 +1,34 @@
+[
+  {
+    "id": "1",
+    "title": "Product Roadmap Q3 2025",
+    "excerpt": "Key features and milestones for the upcoming quarter...",
+    "lastUpdated": "2h",
+    "tags": ["work", "planning"],
+    "color": "blue"
+  },
+  {
+    "id": "2",
+    "title": "Meeting Notes - Design Review",
+    "excerpt": "Discussion points from the design system review meeting...",
+    "lastUpdated": "1d",
+    "tags": ["meetings", "design"],
+    "color": "yellow"
+  },
+  {
+    "id": "3",
+    "title": "JavaScript Patterns & Best Practices",
+    "excerpt": "Collection of useful JavaScript patterns and coding guidelines...",
+    "lastUpdated": "3d",
+    "tags": ["learning", "javascript"],
+    "color": "blue"
+  },
+  {
+    "id": "4",
+    "title": "Weekend Project Ideas",
+    "excerpt": "Fun side projects to work on during free time...",
+    "lastUpdated": "1w",
+    "tags": ["personal", "ideas"],
+    "color": "yellow"
+  }
+]

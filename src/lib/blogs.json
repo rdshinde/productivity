@@ -1,0 +1,35 @@
+[
+  {
+    "id": "1",
+    "category": "Software Engineering",
+    "readTime": "8 min read",
+    "title": "The Future of Productivity: How AI is Revolutionizing Software Development",
+    "excerpt": "Discover how artificial intelligence is transforming the way developers work, from automated code reviews to intelligent debugging and beyond.",
+    "author": "Alex Johnson",
+    "authorImage": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face",
+    "color": "blue",
+    "icon": "🤖"
+  },
+  {
+    "id": "2",
+    "category": "Cooking",
+    "readTime": "5 min read",
+    "title": "Meal Prep Mastery: 10 Recipes for Busy Professionals",
+    "excerpt": "Streamline your week with these delicious and nutritious meal prep ideas that take less than 30 minutes each.",
+    "author": "Chef Sarah",
+    "authorImage": "https://images.unsplash.com/photo-1494790108755-2616c9e5e751?w=24&h=24&fit=crop&crop=face",
+    "color": "green",
+    "icon": "🍳"
+  },
+  {
+    "id": "3",
+    "category": "Music",
+    "readTime": "7 min read",
+    "title": "The Science of Music and Productivity",
+    "excerpt": "Learn how different types of music can enhance focus, creativity, and overall work performance.",
+    "author": "Dr. Michael Chen",
+    "authorImage": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=24&h=24&fit=crop&crop=face",
+    "color": "purple",
+    "icon": "🎵"
+  }
+]
