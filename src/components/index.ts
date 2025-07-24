@@ -1,5 +1,14 @@
 export { FloatingElement } from "./ui/FloatingElement";
-export {Footer} from "./ui/Footer";
-export {Navbar} from "./ui/Navbar";
-export {AuthCard} from "./auth/AuthCard";
-export {AuthIllustration} from "./ui/AuthIllustration";
+export { Footer } from "./ui/Footer";
+export { Navbar } from "./ui/Navbar";
+export { AuthCard } from "./auth/AuthCard";
+export { AuthIllustration } from "./ui/AuthIllustration";
+export { CollaborationPanel } from "./dashboard/CollaborationPanel";
+export { TaskList } from "./dashboard/TaskList";
+export { EventList } from "./dashboard/EventList";
+export { Header } from "./dashboard/Header";
+export { HealthDashboard } from "./dashboard/HealthDashboard";
+export { NoteList } from "./dashboard/NoteList";
+export { Sidebar } from "./dashboard/Sidebar";
+export { StatsOverview } from "./dashboard/StatsOverview";
+export {RightSidebar} from "./dashboard/RightSidebar";

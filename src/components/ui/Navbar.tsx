@@ -11,11 +11,41 @@ interface NavItem {
   isExternal?: boolean;
 }
 
-const navItems: NavItem[] = [
-  { href: "/#features", label: "Features" },
-  { href: "/#how-it-works", label: "How It Works" },
-  { href: "/#pricing", label: "Pricing" },
-];
+interface ActionButton {
+  href: string;
+  label: string;
+  variant: "primary" | "secondary" | "link";
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+interface NavConfig {
+  mainItems: NavItem[];
+  actionButtons: ActionButton[];
+  footerLinks: NavItem[];
+}
+
+const navConfig: NavConfig = {
+  mainItems: [
+    { href: "/#features", label: "Features" },
+    { href: "/#how-it-works", label: "How It Works" },
+    { href: "/#pricing", label: "Pricing" },
+  ],
+  actionButtons: [
+    {
+      href: "/",
+      label: "Back to Home",
+      variant: "primary",
+      className:
+        "bg-primary text-white px-4 lg:px-6 py-2 lg:py-2.5 rounded-full hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:scale-[1.02] font-bold text-sm lg:text-[15px] shadow-md",
+      style: {
+        background:
+          "linear-gradient(135deg, #00809d 0%, #00b4d8 50%, #0099cc 100%)",
+      },
+    },
+  ],
+  footerLinks: [{ href: "/terms", label: "Terms & Conditions" }],
+};
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -68,7 +98,7 @@ export const Navbar: React.FC = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8 lg:space-x-10">
-            {navItems.map((item, index) => (
+            {navConfig.mainItems.map((item, index) => (
               <motion.div
                 key={item.href}
                 initial={{ opacity: 0, y: -20 }}
@@ -77,7 +107,7 @@ export const Navbar: React.FC = () => {
               >
                 <Link
                   href={item.href}
-                  className="text-gray-800 hover:text-primary transition-all duration-200 font-medium text-sm lg:text-[15px] relative group"
+                  className="text-gray-800 hover:text-primary transition-all duration-200 font-semibold text-sm lg:text-[15px] relative group"
                 >
                   {item.label}
                   <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full" />
@@ -91,16 +121,16 @@ export const Navbar: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6 }}
             >
-              <Link
-                href="/"
-                className="bg-primary text-white px-4 lg:px-6 py-2 lg:py-2.5 rounded-full hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:scale-[1.02] font-bold text-sm lg:text-[15px] shadow-md"
-                style={{
-                  background:
-                    "linear-gradient(135deg, #00809d 0%, #00b4d8 50%, #0099cc 100%)",
-                }}
-              >
-                Back to Home
-              </Link>
+              {navConfig.actionButtons.map((button, index) => (
+                <Link
+                  key={button.href}
+                  href={button.href}
+                  className={button.className}
+                  style={button.style}
+                >
+                  {button.label}
+                </Link>
+              ))}
             </motion.div>
           </div>
 
@@ -152,7 +182,7 @@ export const Navbar: React.FC = () => {
               transition={{ duration: 0.3 }}
             >
               <div className="px-4 sm:px-6 py-4 space-y-4">
-                {navItems.map((item, index) => (
+                {navConfig.mainItems.map((item, index) => (
                   <motion.div
                     key={item.href}
                     initial={{ opacity: 0, x: -20 }}
@@ -168,37 +198,42 @@ export const Navbar: React.FC = () => {
                     </Link>
                   </motion.div>
                 ))}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: navItems.length * 0.1 }}
-                >
-                  <Link
-                    href="/terms"
-                    onClick={closeMenu}
-                    className="block text-gray-600 hover:text-primary transition-all duration-200 font-medium text-lg py-2 border-b border-gray-100 underline underline-offset-2"
-                  >
-                    Terms & Conditions
-                  </Link>
-                </motion.div>
-                <motion.div
-                  className="pt-4"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <Link
-                    href="/"
-                    onClick={closeMenu}
-                    className="block w-full bg-primary text-white px-6 py-3 rounded-full hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 font-bold text-lg shadow-md text-center"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, #00809d 0%, #00b4d8 50%, #0099cc 100%)",
+                {navConfig.footerLinks.map((link, index) => (
+                  <motion.div
+                    key={link.href}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{
+                      delay: navConfig.mainItems.length * 0.1 + index * 0.1,
                     }}
                   >
-                    Back to Home
-                  </Link>
-                </motion.div>
+                    <Link
+                      href={link.href}
+                      onClick={closeMenu}
+                      className="block text-gray-600 hover:text-primary transition-all duration-200 font-medium text-lg py-2 border-b border-gray-100 underline underline-offset-2"
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.div>
+                ))}
+                {navConfig.actionButtons.map((button, index) => (
+                  <motion.div
+                    key={button.href}
+                    className="pt-4"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 + index * 0.1 }}
+                  >
+                    <Link
+                      href={button.href}
+                      onClick={closeMenu}
+                      className="block w-full bg-primary text-white px-6 py-3 rounded-full hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 font-bold text-lg shadow-md text-center"
+                      style={button.style}
+                    >
+                      {button.label}
+                    </Link>
+                  </motion.div>
+                ))}
               </div>
             </motion.div>
           )}
