@@ -59,37 +59,37 @@ export const Sidebar = () => {
       {/* Navigation */}
       <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
         {navItems.map(({ label, icon: Icon, href, badge }) => (
-          <Link href={href} key={label} legacyBehavior>
-            <a
-              className="sidebar-item flex items-center px-3 py-3 text-gray-700 rounded-2xl group hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
-              style={{
-                background: "rgba(255, 255, 255, 0.8)",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(0, 128, 157, 0.08)",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(0, 128, 157, 0.1)";
-                e.currentTarget.style.borderColor = "rgba(0, 128, 157, 0.2)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.8)";
-                e.currentTarget.style.borderColor = "rgba(0, 128, 157, 0.08)";
-              }}
-            >
-              <Icon className="w-5 h-5 mr-3" style={{ color: "#00809d" }} />
-              <span className="font-bold text-gray-800">{label}</span>
-              {badge && (
-                <span
-                  className="ml-auto text-white text-xs px-2 py-1 rounded-full font-bold shadow-sm"
-                  style={{
-                    background:
-                      "linear-gradient(135deg, #00809d 0%, #0099cc 100%)",
-                  }}
-                >
-                  {badge}
-                </span>
-              )}
-            </a>
+          <Link
+            href={href}
+            key={label}
+            className="sidebar-item flex items-center px-3 py-3 text-gray-700 rounded-2xl group hover:shadow-md transition-all duration-200 hover:scale-[1.02]"
+            style={{
+              background: "rgba(255, 255, 255, 0.8)",
+              backdropFilter: "blur(10px)",
+              border: "1px solid rgba(0, 128, 157, 0.08)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "rgba(0, 128, 157, 0.1)";
+              e.currentTarget.style.borderColor = "rgba(0, 128, 157, 0.2)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "rgba(255, 255, 255, 0.8)";
+              e.currentTarget.style.borderColor = "rgba(0, 128, 157, 0.08)";
+            }}
+          >
+            <Icon className="w-5 h-5 mr-3" style={{ color: "#00809d" }} />
+            <span className="font-bold text-gray-800">{label}</span>
+            {badge && (
+              <span
+                className="ml-auto text-white text-xs px-2 py-1 rounded-full font-bold shadow-sm"
+                style={{
+                  background:
+                    "linear-gradient(135deg, #00809d 0%, #0099cc 100%)",
+                }}
+              >
+                {badge}
+              </span>
+            )}
           </Link>
         ))}
       </nav>

@@ -2,15 +2,11 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
+import { WeatherComponent } from "./WeatherComponent";
 
 export const Header = () => {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [weather, setWeather] = useState({
-    temp: 72,
-    condition: "Sunny",
-    icon: "☀️",
-  });
 
   useEffect(() => {
     const updateDateTime = () => {
@@ -35,36 +31,12 @@ export const Header = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Simulate weather
-  useEffect(() => {
-    const updateWeather = () => {
-      const temp = Math.floor(Math.random() * 20) + 60;
-      const conditions = [
-        { condition: "Sunny", icon: "☀️" },
-        { condition: "Cloudy", icon: "☁️" },
-        { condition: "Partly Cloudy", icon: "⛅" },
-      ];
-      setWeather({
-        temp,
-        ...conditions[Math.floor(Math.random() * conditions.length)],
-      });
-    };
-    updateWeather();
-    const interval = setInterval(updateWeather, 300000);
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <motion.header
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className=" p-6 mb-6 shadow-lg"
-      style={{
-        background: "rgba(255, 255, 255, 0.98)",
-        backdropFilter: "blur(20px)",
-        border: "1px solid rgba(0, 128, 157, 0.1)",
-      }}
+      className="p-6 mb-6 shadow-lg bg-white/98 backdrop-blur-[20px] border border-[rgba(0,128,157,0.1)]"
     >
       <div className="header-content flex flex-col md:flex-row items-center justify-between gap-4">
         {/* AI Search Bar */}
@@ -76,30 +48,11 @@ export const Header = () => {
             <input
               type="text"
               placeholder="Ask AI anything about your tasks, notes, events..."
-              className="block w-full pl-10 pr-12 py-3 border rounded-2xl transition-all duration-200 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:ring-2 focus:shadow-lg"
-              style={{
-                background: "rgba(255, 255, 255, 0.8)",
-                backdropFilter: "blur(10px)",
-                border: "1px solid rgba(0, 128, 157, 0.2)",
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = "#00809d";
-                e.target.style.background = "rgba(255, 255, 255, 0.95)";
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = "rgba(0, 128, 157, 0.2)";
-                e.target.style.background = "rgba(255, 255, 255, 0.8)";
-              }}
+              className="block w-full pl-10 pr-12 py-3 border border-[rgba(0,128,157,0.2)] rounded-2xl transition-all duration-200 text-gray-900 placeholder-gray-500 font-medium focus:outline-none focus:ring-2 focus:shadow-lg bg-white/80 backdrop-blur-[10px] focus:border-[#00809d] focus:bg-white/95"
               id="ai-search"
             />
             <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-              <kbd
-                className="hidden sm:inline-block px-2 py-1 text-xs font-bold text-gray-500 rounded"
-                style={{
-                  background: "rgba(0, 128, 157, 0.1)",
-                  border: "1px solid rgba(0, 128, 157, 0.2)",
-                }}
-              >
+              <kbd className="hidden sm:inline-block px-2 py-1 text-xs font-bold text-gray-500 rounded bg-[rgba(0,128,157,0.1)] border border-[rgba(0,128,157,0.2)]">
                 ⌘K
               </kbd>
             </div>
@@ -118,30 +71,9 @@ export const Header = () => {
               {date}
             </div>
           </div>
-          <div
-            className="flex items-center space-x-3 px-4 py-3 rounded-2xl shadow-md"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(0, 128, 157, 0.1) 0%, rgba(0, 180, 216, 0.1) 100%)",
-              border: "1px solid rgba(0, 128, 157, 0.2)",
-            }}
-          >
-            <div className="weather-icon text-2xl">{weather.icon}</div>
-            <div>
-              <div className="text-sm font-bold text-gray-900">
-                {weather.temp}°F
-              </div>
-              <div className="text-xs text-gray-500 font-medium">
-                {weather.condition}
-              </div>
-              <div
-                className="location-badge mt-1 font-medium"
-                style={{ color: "#00809d" }}
-              >
-                📍 San Francisco
-              </div>
-            </div>
-          </div>
+
+          {/* Weather Component */}
+          <WeatherComponent />
         </div>
       </div>
     </motion.header>

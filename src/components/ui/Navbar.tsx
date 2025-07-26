@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Menu, X, Star } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 interface NavItem {
   href: string;
@@ -21,9 +22,23 @@ interface ActionButton {
 
 interface NavConfig {
   mainItems: NavItem[];
-  actionButtons: ActionButton[];
   footerLinks: NavItem[];
 }
+
+// Dynamic function to get button text and href based on current path
+const getButtonConfig = (pathname: string) => {
+  const isAuthPage = pathname === "/auth";
+  const isHomePage = pathname === "/" || pathname === "";
+
+  if (isAuthPage) {
+    return { href: "/", label: "Back to Home" };
+  } else if (isHomePage) {
+    return { href: "/auth", label: "Get Started" };
+  } else {
+    // Default for other pages
+    return { href: "/", label: "Back to Home" };
+  }
+};
 
 const navConfig: NavConfig = {
   mainItems: [
@@ -31,25 +46,16 @@ const navConfig: NavConfig = {
     { href: "/#how-it-works", label: "How It Works" },
     { href: "/#pricing", label: "Pricing" },
   ],
-  actionButtons: [
-    {
-      href: "/",
-      label: "Back to Home",
-      variant: "primary",
-      className:
-        "bg-primary text-white px-4 lg:px-6 py-2 lg:py-2.5 rounded-full hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:scale-[1.02] font-bold text-sm lg:text-[15px] shadow-md",
-      style: {
-        background:
-          "linear-gradient(135deg, #00809d 0%, #00b4d8 50%, #0099cc 100%)",
-      },
-    },
-  ],
   footerLinks: [{ href: "/terms", label: "Terms & Conditions" }],
 };
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
+
+  // Get dynamic button text and href based on current path
+  const buttonConfig = getButtonConfig(pathname);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -71,6 +77,7 @@ export const Navbar: React.FC = () => {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6 }}
+      viewport={{ once: true }}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16 sm:h-20">
@@ -80,17 +87,12 @@ export const Navbar: React.FC = () => {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <div
-              className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shadow-lg"
-              style={{
-                background: "linear-gradient(135deg, #00809d 0%, #0099cc 100%)",
-              }}
-            >
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-[#00809d] to-[#0099cc]">
               <Star className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
             </div>
             <Link
               href="/"
-              className="ml-3 sm:ml-4 text-xl sm:text-2xl font-black text-gray-900 tracking-tight hover:text-primary transition-colors duration-200"
+              className="ml-3 sm:ml-4 text-xl sm:text-2xl font-black text-gray-900 tracking-tight hover:text-[#00809d] transition-colors duration-200"
             >
               Productivity
             </Link>
@@ -107,10 +109,10 @@ export const Navbar: React.FC = () => {
               >
                 <Link
                   href={item.href}
-                  className="text-gray-800 hover:text-primary transition-all duration-200 font-semibold text-sm lg:text-[15px] relative group"
+                  className="text-gray-800 hover:text-[#00809d] transition-all duration-200 font-semibold text-sm lg:text-[15px] relative group"
                 >
                   {item.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full" />
+                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00809d] transition-all duration-200 group-hover:w-full" />
                 </Link>
               </motion.div>
             ))}
@@ -121,16 +123,12 @@ export const Navbar: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6 }}
             >
-              {navConfig.actionButtons.map((button, index) => (
-                <Link
-                  key={button.href}
-                  href={button.href}
-                  className={button.className}
-                  style={button.style}
-                >
-                  {button.label}
-                </Link>
-              ))}
+              <Link
+                href={buttonConfig.href}
+                className="bg-gradient-to-r from-[#00809d] via-[#00b4d8] to-[#0099cc] text-white px-4 lg:px-6 py-2 lg:py-2.5 rounded-full hover:shadow-lg hover:shadow-[#00809d]/25 transition-all duration-300 transform hover:scale-[1.02] font-bold text-sm lg:text-[15px] shadow-md"
+              >
+                {buttonConfig.label}
+              </Link>
             </motion.div>
           </div>
 
@@ -149,7 +147,7 @@ export const Navbar: React.FC = () => {
                   exit={{ rotate: 90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <X className="w-6 h-6 text-primary" />
+                  <X className="w-6 h-6 text-[#00809d]" />
                 </motion.div>
               ) : (
                 <motion.div
@@ -159,7 +157,7 @@ export const Navbar: React.FC = () => {
                   exit={{ rotate: -90, opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <Menu className="w-6 h-6 text-primary" />
+                  <Menu className="w-6 h-6 text-[#00809d]" />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -170,12 +168,7 @@ export const Navbar: React.FC = () => {
         <AnimatePresence>
           {isMenuOpen && (
             <motion.div
-              className="md:hidden absolute top-full left-0 w-full backdrop-blur-xl border-t border-gray-200/30 shadow-lg"
-              style={{
-                background:
-                  "linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(0, 128, 157, 0.05) 50%, rgba(255, 255, 255, 0.95) 100%)",
-                borderTop: "1px solid rgba(0, 128, 157, 0.2)",
-              }}
+              className="md:hidden absolute top-full left-0 w-full backdrop-blur-xl border-t border-[rgba(0,128,157,0.2)] shadow-lg bg-gradient-to-br from-white/98 via-[rgba(0,128,157,0.05)] to-white/95"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
@@ -192,7 +185,7 @@ export const Navbar: React.FC = () => {
                     <Link
                       href={item.href}
                       onClick={closeMenu}
-                      className="block text-gray-800 hover:text-primary transition-all duration-200 font-semibold text-lg py-2 border-b border-gray-100"
+                      className="block text-gray-800 hover:text-[#00809d] transition-all duration-200 font-semibold text-lg py-2 border-b border-gray-100"
                     >
                       {item.label}
                     </Link>
@@ -210,30 +203,26 @@ export const Navbar: React.FC = () => {
                     <Link
                       href={link.href}
                       onClick={closeMenu}
-                      className="block text-gray-600 hover:text-primary transition-all duration-200 font-medium text-lg py-2 border-b border-gray-100 underline underline-offset-2"
+                      className="block text-gray-600 hover:text-[#00809d] transition-all duration-200 font-medium text-lg py-2 border-b border-gray-100 underline underline-offset-2"
                     >
                       {link.label}
                     </Link>
                   </motion.div>
                 ))}
-                {navConfig.actionButtons.map((button, index) => (
-                  <motion.div
-                    key={button.href}
-                    className="pt-4"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4 + index * 0.1 }}
+                <motion.div
+                  className="pt-4"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <Link
+                    href={buttonConfig.href}
+                    onClick={closeMenu}
+                    className="block w-full bg-gradient-to-r from-[#00809d] via-[#00b4d8] to-[#0099cc] text-white px-6 py-3 rounded-full hover:shadow-lg hover:shadow-[#00809d]/25 transition-all duration-300 font-bold text-lg shadow-md text-center"
                   >
-                    <Link
-                      href={button.href}
-                      onClick={closeMenu}
-                      className="block w-full bg-primary text-white px-6 py-3 rounded-full hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 font-bold text-lg shadow-md text-center"
-                      style={button.style}
-                    >
-                      {button.label}
-                    </Link>
-                  </motion.div>
-                ))}
+                    {buttonConfig.label}
+                  </Link>
+                </motion.div>
               </div>
             </motion.div>
           )}

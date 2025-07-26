@@ -11,6 +11,7 @@ import {
   BookOpen,
   X,
 } from "lucide-react";
+import { MiniCalendar } from "./MiniCalendar";
 
 const quickActions = [
   {
@@ -91,12 +92,7 @@ const alarms = [
 export const RightSidebar = () => {
   return (
     <motion.aside
-      className="sidebar-right w-80 border-l p-6 space-y-6 hidden lg:block h-screen overflow-y-auto overflow-x-hidden"
-      style={{
-        background: "rgba(255, 255, 255, 0.98)",
-        backdropFilter: "blur(20px)",
-        borderLeft: "1px solid rgba(0, 128, 157, 0.1)",
-      }}
+      className="sidebar-right w-80 border-l border-[rgba(0,128,157,0.1)] p-6 space-y-6 hidden lg:block h-screen overflow-y-auto overflow-x-hidden bg-white/98 backdrop-blur-[20px]"
       initial={{ x: 80, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ type: "spring", stiffness: 80 }}
@@ -104,12 +100,7 @@ export const RightSidebar = () => {
       {/* Quick Actions */}
       <div>
         <h3 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2">
-          <span
-            className="w-8 h-8 rounded-2xl flex items-center justify-center shadow-lg"
-            style={{
-              background: "linear-gradient(135deg, #00809d 0%, #0099cc 100%)",
-            }}
-          >
+          <span className="w-8 h-8 rounded-2xl bg-gradient-to-br from-[#00809d] to-[#0099cc] flex items-center justify-center shadow-lg">
             <Plus className="w-4 h-4 text-white" />
           </span>
           Quick Actions
@@ -126,86 +117,13 @@ export const RightSidebar = () => {
           ))}
         </div>
       </div>
-      {/* Mini Calendar */}
-      <div>
-        <h3 className="text-lg font-black text-gray-900 mb-4">Calendar</h3>
-        <div
-          className="rounded-3xl p-4 shadow-md"
-          style={{
-            background: "rgba(255, 255, 255, 0.98)",
-            backdropFilter: "blur(20px)",
-            border: "1px solid rgba(0, 128, 157, 0.1)",
-          }}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h4 className="font-bold text-gray-900">July 2025</h4>
-            <div className="flex space-x-1">
-              <button className="p-1 hover:bg-gray-200 rounded transition-colors duration-200">
-                <svg
-                  className="w-4 h-4 text-gray-600"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-                </svg>
-              </button>
-              <button className="p-1 hover:bg-gray-200 rounded transition-colors duration-200">
-                <svg
-                  className="w-4 h-4 text-gray-600"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div className="mini-calendar">
-            <div className="grid grid-cols-7 gap-1 mb-2">
-              {[..."SMTWTFS"].map((d, i) => (
-                <div
-                  key={i}
-                  className="text-center text-xs font-bold text-gray-500 py-1"
-                >
-                  {d}
-                </div>
-              ))}
-            </div>
-            <div className="grid grid-cols-7 gap-1">
-              {/* Example days, highlight today */}
-              {[...Array(35)].map((_, i) => (
-                <div
-                  key={i}
-                  className={`text-center py-1 text-sm day ${
-                    i === 20
-                      ? "text-white rounded-lg font-bold shadow-md"
-                      : "hover:bg-gray-100 rounded transition-colors duration-200"
-                  } ${i < 2 || i > 32 ? "text-gray-400" : "text-gray-700"}`}
-                  style={
-                    i === 20
-                      ? {
-                          background:
-                            "linear-gradient(135deg, #00809d 0%, #0099cc 100%)",
-                        }
-                      : {}
-                  }
-                >
-                  {i < 2 ? 29 + i : i > 32 ? i - 32 : i - 1}
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+
+      {/* Mini Calendar Component */}
+      <MiniCalendar />
+
       {/* Motivational Quote */}
       <div>
-        <div
-          className="rounded-3xl p-4 text-white shadow-lg"
-          style={{
-            background:
-              "linear-gradient(135deg, #00809d 0%, #00b4d8 50%, #0099cc 100%)",
-          }}
-        >
+        <div className="bg-gradient-to-br from-[#00809d] via-[#00b4d8] to-[#0099cc] rounded-3xl p-4 text-white shadow-lg">
           <div className="text-2xl mb-2">💡</div>
           <p className="text-sm font-bold mb-2">
             "The secret of getting ahead is getting started."
@@ -220,10 +138,10 @@ export const RightSidebar = () => {
           {notifications.map((n) => (
             <div
               key={n.id}
-              className="p-3 rounded-2xl shadow-md transition-all duration-200 hover:shadow-lg"
+              className="p-3 rounded-2xl shadow-md transition-all duration-200 hover:shadow-lg border"
               style={{
                 background: n.bgColor,
-                border: `1px solid ${n.borderColor}`,
+                borderColor: n.borderColor,
               }}
             >
               <div className="flex items-start space-x-2">
@@ -252,12 +170,7 @@ export const RightSidebar = () => {
           {alarms.map((alarm) => (
             <div
               key={alarm.id}
-              className="flex items-center justify-between p-3 rounded-2xl shadow-md transition-all duration-200 hover:shadow-lg"
-              style={{
-                background: "rgba(255, 255, 255, 0.98)",
-                backdropFilter: "blur(20px)",
-                border: "1px solid rgba(0, 128, 157, 0.1)",
-              }}
+              className="flex items-center justify-between p-3 rounded-2xl shadow-md transition-all duration-200 hover:shadow-lg bg-white/98 backdrop-blur-[20px] border border-[rgba(0,128,157,0.1)]"
             >
               <div className="flex items-center space-x-3">
                 <div
