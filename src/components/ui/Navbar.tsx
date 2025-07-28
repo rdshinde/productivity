@@ -1,65 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { Menu, X, Star } from "lucide-react";
-import { usePathname } from "next/navigation";
 
-interface NavItem {
-  href: string;
-  label: string;
-  isExternal?: boolean;
-}
-
-interface ActionButton {
-  href: string;
-  label: string;
-  variant: "primary" | "secondary" | "link";
-  className?: string;
-  style?: React.CSSProperties;
-}
-
-interface NavConfig {
-  mainItems: NavItem[];
-  footerLinks: NavItem[];
-}
-
-// Dynamic function to get button text and href based on current path
-const getButtonConfig = (pathname: string) => {
-  const isAuthPage = pathname === "/auth";
-  const isHomePage = pathname === "/" || pathname === "";
-
-  if (isAuthPage) {
-    return { href: "/", label: "Back to Home" };
-  } else if (isHomePage) {
-    return { href: "/auth", label: "Get Started" };
-  } else {
-    // Default for other pages
-    return { href: "/", label: "Back to Home" };
-  }
-};
-
-const navConfig: NavConfig = {
-  mainItems: [
-    { href: "/#features", label: "Features" },
-    { href: "/#how-it-works", label: "How It Works" },
-    { href: "/#pricing", label: "Pricing" },
-  ],
-  footerLinks: [{ href: "/terms", label: "Terms & Conditions" }],
-};
-
-export const Navbar: React.FC = () => {
+export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const pathname = usePathname();
-
-  // Get dynamic button text and href based on current path
-  const buttonConfig = getButtonConfig(pathname);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      setScrolled(window.scrollY > 100);
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
@@ -70,164 +20,157 @@ export const Navbar: React.FC = () => {
   const closeMenu = () => setIsMenuOpen(false);
 
   return (
-    <motion.nav
-      className={`fixed top-0 w-full z-50 backdrop-blur-xl border-b border-gray-200/20 shadow-sm transition-all duration-300 ${
-        scrolled ? "bg-white/90" : "bg-white/85"
-      }`}
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ duration: 0.6 }}
-      viewport={{ once: true }}
+    <nav
+      id="navbar"
+      className="fixed top-0 w-full z-50 backdrop-blur-xl border-b border-gray-200/20 shadow-sm transition-all duration-300"
+      style={{
+        background: scrolled ? "rgba(255, 255, 255, 0.95)" : "rgba(255, 255, 255, 0.85)",
+        borderBottom: scrolled ? "1px solid rgba(0, 128, 157, 0.15)" : "1px solid rgba(200, 200, 200, 0.2)",
+        boxShadow: scrolled ? "0 4px 24px rgba(0, 128, 157, 0.1)" : "0 2px 12px rgba(0, 0, 0, 0.05)"
+      }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 sm:h-20">
-          {/* Logo */}
-          <motion.div
-            className="flex items-center"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
-          >
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-[#00809d] to-[#0099cc]">
-              <Star className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+      <div className="max-w-7xl mx-auto px-6 sm:px-8">
+        <div className="flex justify-between items-center h-20">
+          <div className="flex items-center">
+            <div
+              className="w-10 h-10 bg-gradient-to-br from-primary to-primary-vibrant rounded-xl flex items-center justify-center shadow-lg"
+              style={{
+                background: "linear-gradient(135deg, #00809d 0%, #0099cc 100%)"
+              }}
+            >
+              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
             </div>
-            <Link
-              href="/"
-              className="ml-3 sm:ml-4 text-xl sm:text-2xl font-black text-gray-900 tracking-tight hover:text-[#00809d] transition-colors duration-200"
-            >
-              Productivity
-            </Link>
-          </motion.div>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8 lg:space-x-10">
-            {navConfig.mainItems.map((item, index) => (
-              <motion.div
-                key={item.href}
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 + 0.3 }}
-              >
-                <Link
-                  href={item.href}
-                  className="text-gray-800 hover:text-[#00809d] transition-all duration-200 font-semibold text-sm lg:text-[15px] relative group"
-                >
-                  {item.label}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#00809d] transition-all duration-200 group-hover:w-full" />
-                </Link>
-              </motion.div>
-            ))}
-
-            <motion.div
-              className="flex items-center space-x-3"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <Link
-                href={buttonConfig.href}
-                className="bg-gradient-to-r from-[#00809d] via-[#00b4d8] to-[#0099cc] text-white px-4 lg:px-6 py-2 lg:py-2.5 rounded-full hover:shadow-lg hover:shadow-[#00809d]/25 transition-all duration-300 transform hover:scale-[1.02] font-bold text-sm lg:text-[15px] shadow-md"
-              >
-                {buttonConfig.label}
-              </Link>
-            </motion.div>
+            <span className="ml-4 text-2xl font-bold text-gray-900 tracking-tight">Productivity</span>
           </div>
 
-          {/* Mobile Menu Button */}
-          <motion.button
-            onClick={toggleMenu}
+          <div className="hidden md:flex items-center space-x-10">
+            <a
+              href="/#features"
+              className="text-gray-800 hover:text-primary transition-all duration-200 font-medium text-[15px] relative group"
+            >
+              Features
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"></span>
+            </a>
+            <a
+              href="/#how-it-works"
+              className="text-gray-800 hover:text-primary transition-all duration-200 font-medium text-[15px] relative group"
+            >
+              How It Works
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"></span>
+            </a>
+            <a
+              href="/#pricing"
+              className="text-gray-800 hover:text-primary transition-all duration-200 font-medium text-[15px] relative group"
+            >
+              Pricing
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-200 group-hover:w-full"></span>
+            </a>
+            <div className="flex items-center space-x-3">
+              <a
+                href="/auth"
+                className="text-gray-800 hover:text-primary transition-all duration-200 font-medium text-[15px] px-4 py-2"
+              >
+                Sign In
+              </a>
+              <button
+                className="bg-primary text-white px-6 py-2.5 rounded-full hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 transform hover:scale-[1.02] font-medium text-[15px] shadow-md gradient-bg"
+              >
+                Get Started
+              </button>
+            </div>
+          </div>
+
+          <button
+            id="mobile-menu-button"
             className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            whileTap={{ scale: 0.95 }}
+            onClick={toggleMenu}
           >
-            <AnimatePresence mode="wait">
-              {isMenuOpen ? (
-                <motion.div
-                  key="close"
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: 90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <X className="w-6 h-6 text-[#00809d]" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="menu"
-                  initial={{ rotate: 90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: -90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Menu className="w-6 h-6 text-[#00809d]" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.button>
+            <svg
+              id="hamburger-icon"
+              className={`w-6 h-6 text-primary transition-transform duration-300 ${isMenuOpen ? 'hidden' : ''}`}
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              style={{ color: "#00809d" }}
+            >
+              <path
+                d="M4 6h16M4 12h16M4 18h16"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <svg
+              id="close-icon"
+              className={`w-6 h-6 text-primary transition-transform duration-300 ${isMenuOpen ? '' : 'hidden'}`}
+              fill="currentColor"
+              viewBox="0 0 24 24"
+              style={{ color: "#00809d" }}
+            >
+              <path
+                d="M6 18L18 6M6 6l12 12"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
         </div>
 
         {/* Mobile Menu */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              className="md:hidden absolute top-full left-0 w-full backdrop-blur-xl border-t border-[rgba(0,128,157,0.2)] shadow-lg bg-gradient-to-br from-white/98 via-[rgba(0,128,157,0.05)] to-white/95"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
+        <div
+          id="mobile-menu"
+          className={`md:hidden absolute top-full left-0 w-full backdrop-blur-xl border-t border-gray-200/30 shadow-lg transition-all duration-300 ease-in-out ${
+            isMenuOpen ? 'transform translate-y-0 opacity-100 pointer-events-auto' : 'transform -translate-y-full opacity-0 pointer-events-none'
+          }`}
+          style={{
+            background: "linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(0, 128, 157, 0.05) 50%, rgba(255, 255, 255, 0.95) 100%)",
+            borderTop: "1px solid rgba(0, 128, 157, 0.2)"
+          }}
+        >
+          <div className="px-6 py-4 space-y-4">
+            <a
+              href="/#features"
+              className="block text-gray-800 hover:text-primary transition-all duration-200 font-medium text-lg py-2 border-b border-gray-100"
+              onClick={closeMenu}
             >
-              <div className="px-4 sm:px-6 py-4 space-y-4">
-                {navConfig.mainItems.map((item, index) => (
-                  <motion.div
-                    key={item.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <Link
-                      href={item.href}
-                      onClick={closeMenu}
-                      className="block text-gray-800 hover:text-[#00809d] transition-all duration-200 font-semibold text-lg py-2 border-b border-gray-100"
-                    >
-                      {item.label}
-                    </Link>
-                  </motion.div>
-                ))}
-                {navConfig.footerLinks.map((link, index) => (
-                  <motion.div
-                    key={link.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{
-                      delay: navConfig.mainItems.length * 0.1 + index * 0.1,
-                    }}
-                  >
-                    <Link
-                      href={link.href}
-                      onClick={closeMenu}
-                      className="block text-gray-600 hover:text-[#00809d] transition-all duration-200 font-medium text-lg py-2 border-b border-gray-100 underline underline-offset-2"
-                    >
-                      {link.label}
-                    </Link>
-                  </motion.div>
-                ))}
-                <motion.div
-                  className="pt-4"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <Link
-                    href={buttonConfig.href}
-                    onClick={closeMenu}
-                    className="block w-full bg-gradient-to-r from-[#00809d] via-[#00b4d8] to-[#0099cc] text-white px-6 py-3 rounded-full hover:shadow-lg hover:shadow-[#00809d]/25 transition-all duration-300 font-bold text-lg shadow-md text-center"
-                  >
-                    {buttonConfig.label}
-                  </Link>
-                </motion.div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              Features
+            </a>
+            <a
+              href="/#how-it-works"
+              className="block text-gray-800 hover:text-primary transition-all duration-200 font-medium text-lg py-2 border-b border-gray-100"
+              onClick={closeMenu}
+            >
+              How It Works
+            </a>
+            <a
+              href="/#pricing"
+              className="block text-gray-800 hover:text-primary transition-all duration-200 font-medium text-lg py-2 border-b border-gray-100"
+              onClick={closeMenu}
+            >
+              Pricing
+            </a>
+            <div className="pt-4 space-y-3">
+              <a
+                href="/auth"
+                className="block w-full text-center text-gray-800 hover:text-primary transition-all duration-200 font-medium text-lg py-3"
+                onClick={closeMenu}
+              >
+                Sign In
+              </a>
+              <button
+                className="block w-full bg-primary text-white px-6 py-3 rounded-full hover:bg-primary-dark hover:shadow-lg hover:shadow-primary/25 transition-all duration-300 font-medium text-lg shadow-md gradient-bg"
+                onClick={closeMenu}
+              >
+                Get Started
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-    </motion.nav>
+    </nav>
   );
-};
+}

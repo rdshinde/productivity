@@ -1,24 +1,30 @@
 "use client";
-import { Navbar } from "@/components";
-import { motion } from "framer-motion";
-import { Dumbbell } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
+import { Navbar } from "@/components/ui/Navbar";
+import { 
+  HeroSection, 
+  FeaturesSection, 
+  HowItWorksSection, 
+  PricingSection, 
+  CTASection 
+} from "@/components/home";
+import { Footer } from "@/components/ui/Footer";
+import { useEffect } from "react";
+import { setupSmoothScroll } from "@/utils/smoothScroll";
 
 export default function Home() {
-  const [water, setWater] = useState(6);
-  const totalWater = 8;
-  const steps = 8432;
-  const stepGoal = 10000;
+  useEffect(() => {
+    setupSmoothScroll();
+  }, []);
 
   return (
-    <motion.div
-      className="bg-white rounded-xl shadow-card p-6 card-hover"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.5 }}
-    >
+    <main className="min-h-screen">
       <Navbar />
-    </motion.div>
+      <HeroSection />
+      <FeaturesSection />
+      <HowItWorksSection />
+      <PricingSection />
+      <CTASection />
+      <Footer />
+    </main>
   );
 }
